@@ -1,785 +1,1118 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colsam-Sport | Torneo Intercursos</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuración de Paleta de Colores Requerida -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        colsam: {
-                            dark: '#144659',      /* Fondo principal oscuro */
-                            primary: '#03658C',   /* Tarjetas y cabeceras */
-                            secondary: '#66CAF2', /* Botones y acentos principales */
-                            accent: '#9EE4FF',    /* Resaltados y hover */
-                            light: '#D1F2FF'      /* Textos secundarios y fondos suaves */
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #144659; color: #ffffff; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #03658C; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #66CAF2; border-radius: 3px; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col custom-scrollbar">
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colsam Sport - Partidos Intercurso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Navbar -->
-    <header class="bg-colsam-primary border-b border-colsam-secondary/30 sticky top-0 z-40 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-white p-1 rounded-lg">
-                    <img src="https://lh3.googleusercontent.com/d/13DKo3yKAQQ-yoxsIL7d7V540QR7hz11V" alt="Logo" class="w-32 h-8 object-contain" onerror="this.style.display='none';">
-                </div>
-                <div>
-                    <h1 class="text-lg font-extrabold tracking-tight text-white leading-tight">COLSAM-SPORT</h1>
-                    <p class="text-[10px] text-colsam-accent font-bold uppercase tracking-widest leading-none">Intercursos</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-3">
-                <!-- Info de Usuario -->
-                <div id="userInfoHeader" class="hidden items-center gap-2 bg-colsam-dark px-3 py-1.5 rounded-xl border border-colsam-secondary/30 text-xs">
-                    <span class="w-2 h-2 rounded-full bg-colsam-secondary animate-pulse"></span>
-                    <span id="userNameText" class="text-colsam-light font-semibold">Editor</span>
-                </div>
-                
-                <!-- Botón de Login/Logout -->
-                <button id="btnAuthAction" onclick="handleAuth()" class="bg-colsam-secondary hover:bg-colsam-accent text-colsam-dark font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-md">
-                    <i data-lucide="log-in" class="w-4 h-4"></i>
-                    <span id="btnAuthText">Ingresar</span>
-                </button>
-            </div>
-        </div>
+  <style>
+    /* ==========================================
+       VARIABLES Y ESTILOS GLOBALES
+       ========================================== */
+    :root {
+      --primary: #1e3a8a;       /* Azul Institucional */
+      --primary-dark: #0f172a;  /* Oscuro */
+      --accent: #10b981;        /* Verde Deportivo */
+      --accent-hover: #059669;
+      --live-red: #ef4444;      /* Rojo En Vivo */
+      --warning: #f59e0b;       /* Amarillo Tarjeta/Alerta */
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --sidebar-width: 250px;
+      --header-height: 64px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --transition: all 0.25s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================
+       LAYOUT SPA (Header & Sidebar)
+       ========================================== */
+    #sidebar {
+      width: var(--sidebar-width);
+      background: var(--primary-dark);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: var(--transition);
+    }
+
+    .brand {
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand i {
+      color: var(--accent);
+      margin-right: 0.75rem;
+      font-size: 1.4rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 1rem 0.75rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: #94a3b8;
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.925rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-link i {
+      width: 24px;
+      margin-right: 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link.active {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .user-profile-summary {
+      padding: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .user-info {
+      overflow: hidden;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    #main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: var(--transition);
+    }
+
+    header {
+      height: var(--header-height);
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .page-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    main#app-view {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    /* ==========================================
+       COMPONENTES Y UTILIDADES UI
+       ========================================== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+    }
+
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--radius-sm);
+      background: #eff6ff;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .stat-value { font-size: 1.5rem; font-weight: 800; }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-live { background: #fee2e2; color: var(--live-red); }
+    .badge-live .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--live-red);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    .badge-scheduled { background: #e0f2fe; color: #0284c7; }
+    .badge-finished { background: #f1f5f9; color: #475569; }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Pestañas de Filtro */
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: none;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Tarjetas de Partido */
+    .match-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .match-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #cbd5e1;
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+
+    .team {
+      flex: 1;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .score-box {
+      background: var(--primary-dark);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 1.25rem;
+      min-width: 70px;
+      text-align: center;
+      margin: 0 1rem;
+    }
+
+    .match-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    /* Botones y Formulario */
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-accent { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent-hover); }
+    .btn-danger { background: var(--live-red); color: #fff; }
+    .btn-outline { border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }
+    .btn-outline:hover { background: #f1f5f9; }
+
+    .input-code {
+      font-family: monospace;
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 0.75rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      width: 100%;
+      max-width: 320px;
+      margin-bottom: 1rem;
+    }
+
+    .input-code:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Consola Operativa del Editor */
+    .live-console {
+      background: #0f172a;
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .live-score-big {
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: 1rem 0;
+      color: #38bdf8;
+    }
+
+    .quick-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    /* Event Timeline */
+    .timeline {
+      list-style: none;
+      position: relative;
+      padding-left: 1.5rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-color);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    .timeline-icon {
+      position: absolute;
+      left: -1.5rem;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #fff;
+    }
+
+    /* States & Feedback */
+    .spinner {
+      border: 3px solid rgba(0,0,0,0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: var(--primary);
+      animation: spin 1s linear infinite;
+      margin: 3rem auto;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary-dark);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+      display: none;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: #fff;
+      width: 100%;
+      max-width: 500px;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Responsividad */
+    @media (max-width: 768px) {
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      #main-wrapper { margin-left: 0; }
+      .mobile-toggle { display: block; }
+      main#app-view { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside id="sidebar">
+    <div class="brand">
+      <i class="fa-solid fa-trophy"></i>
+      <span>Colsam Sport</span>
+    </div>
+    <ul class="nav-menu" id="nav-menu">
+      </ul>
+    <div class="user-profile-summary">
+      <div class="avatar" id="user-avatar">U</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">Cargando...</div>
+        <span class="user-role-badge" id="user-role">...</span>
+      </div>
+    </div>
+  </aside>
+
+  <div id="main-wrapper">
+    <header>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Abrir menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h1 class="page-title" id="page-title">Dashboard</h1>
+      </div>
+      <div>
+        <span id="current-time" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;"></span>
+      </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 flex flex-col gap-6">
-        
-        <!-- Pestañas de Navegación -->
-        <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-            <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2.5 text-sm font-bold bg-colsam-secondary text-colsam-dark rounded-xl transition whitespace-nowrap flex items-center gap-2 shadow">
-                <i data-lucide="calendar" class="w-4 h-4"></i> Partidos
-            </button>
-            <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="tab-btn px-4 py-2.5 text-sm font-bold bg-colsam-primary text-colsam-light hover:bg-colsam-secondary hover:text-colsam-dark rounded-xl transition whitespace-nowrap flex items-center gap-2">
-                <i data-lucide="list-ordered" class="w-4 h-4"></i> Posiciones
-            </button>
-            <button onclick="switchTab('scorers')" id="tab-scorers" class="tab-btn px-4 py-2.5 text-sm font-bold bg-colsam-primary text-colsam-light hover:bg-colsam-secondary hover:text-colsam-dark rounded-xl transition whitespace-nowrap flex items-center gap-2">
-                <i data-lucide="award" class="w-4 h-4"></i> Goleadores
-            </button>
-            
-            <!-- Pestañas Privadas -->
-            <button onclick="switchTab('management')" id="tab-management" class="tab-btn hidden px-4 py-2.5 text-sm font-bold border border-colsam-secondary text-colsam-secondary hover:bg-colsam-secondary hover:text-colsam-dark rounded-xl transition whitespace-nowrap items-center gap-2">
-                <i data-lucide="settings-2" class="w-4 h-4"></i> Gestión Torneo
-            </button>
-            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn hidden px-4 py-2.5 text-sm font-bold border border-colsam-accent text-colsam-accent hover:bg-colsam-accent hover:text-colsam-dark rounded-xl transition whitespace-nowrap items-center gap-2">
-                <i data-lucide="shield" class="w-4 h-4"></i> Administradores
-            </button>
-        </div>
-
-        <!-- 1. VISTA: PARTIDOS -->
-        <div id="view-matches" class="tab-content flex flex-col gap-4">
-            <div class="flex justify-between items-center bg-colsam-primary p-4 rounded-2xl shadow-md">
-                <div class="flex gap-2">
-                    <button onclick="filterMatches('todos')" id="btn-m-todos" class="px-3 py-1.5 bg-colsam-secondary text-colsam-dark text-xs font-bold rounded-lg">Todos</button>
-                    <button onclick="filterMatches('Futsal')" id="btn-m-futsal" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Futsal</button>
-                    <button onclick="filterMatches('Balonmano')" id="btn-m-balonmano" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Balonm.</button>
-                    <button onclick="filterMatches('Voleibol')" id="btn-m-voleibol" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Volei</button>
-                </div>
-                <button id="btnNewMatch" onclick="openMatchModal()" class="hidden bg-colsam-accent hover:bg-colsam-secondary text-colsam-dark font-bold text-xs px-4 py-2 rounded-xl transition items-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Programar
-                </button>
-            </div>
-            <div id="matches-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Generado por JS -->
-            </div>
-        </div>
-
-        <!-- 2. VISTA: POSICIONES -->
-        <div id="view-leaderboard" class="tab-content hidden flex flex-col gap-4">
-            <div class="bg-colsam-primary p-4 rounded-2xl flex gap-2">
-                <button onclick="filterLeaderboard('Futsal')" id="btn-l-futsal" class="px-3 py-1.5 bg-colsam-secondary text-colsam-dark text-xs font-bold rounded-lg">Futsal</button>
-                <button onclick="filterLeaderboard('Balonmano')" id="btn-l-balonmano" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Balonmano</button>
-                <button onclick="filterLeaderboard('Voleibol')" id="btn-l-voleibol" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Voleibol</button>
-            </div>
-            <div class="bg-colsam-primary rounded-2xl overflow-hidden shadow-xl">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-colsam-dark text-colsam-secondary font-bold text-xs uppercase">
-                            <tr>
-                                <th class="p-4 text-center">Pos</th>
-                                <th class="p-4">Salón</th>
-                                <th class="p-3 text-center">PJ</th>
-                                <th class="p-3 text-center">PG</th>
-                                <th class="p-3 text-center">PE</th>
-                                <th class="p-3 text-center">PP</th>
-                                <th class="p-4 text-right text-colsam-accent">PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboard-body" class="divide-y divide-colsam-dark/50">
-                            <!-- JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. VISTA: GOLEADORES -->
-        <div id="view-scorers" class="tab-content hidden flex flex-col gap-4">
-            <div class="bg-colsam-primary p-4 rounded-2xl flex gap-2">
-                <button onclick="filterScorers('Futsal')" id="btn-s-futsal" class="px-3 py-1.5 bg-colsam-secondary text-colsam-dark text-xs font-bold rounded-lg">Futsal</button>
-                <button onclick="filterScorers('Balonmano')" id="btn-s-balonmano" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Balonmano</button>
-                <button onclick="filterScorers('Voleibol')" id="btn-s-voleibol" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Voleibol</button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="scorers-grid">
-                <!-- JS -->
-            </div>
-        </div>
-
-        <!-- 4. VISTA: GESTIÓN DE TORNEO (Salones y Jugadores) -->
-        <div id="view-management" class="tab-content hidden flex flex-col gap-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Crear Salón -->
-                <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl">
-                    <h3 class="font-bold text-colsam-accent mb-4 flex items-center gap-2"><i data-lucide="school" class="w-5 h-5"></i> Registrar Salón</h3>
-                    <form onsubmit="handleCreateSalon(event)" class="flex gap-2">
-                        <input type="text" id="salon-name" placeholder="Ej: 11A" required class="flex-grow bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30 focus:outline-none focus:border-colsam-secondary">
-                        <button type="submit" class="bg-colsam-secondary text-colsam-dark font-bold px-4 py-2 rounded-xl">Crear</button>
-                    </form>
-                    <div class="mt-4 flex flex-wrap gap-2" id="salones-list">
-                        <!-- JS -->
-                    </div>
-                </div>
-
-                <!-- Registrar Jugador -->
-                <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl">
-                    <h3 class="font-bold text-colsam-accent mb-4 flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5"></i> Inscribir Jugador</h3>
-                    <form onsubmit="handleCreateJugador(event)" class="space-y-3">
-                        <select id="jugador-salon" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30 focus:outline-none focus:border-colsam-secondary">
-                            <option value="">Selecciona un salón...</option>
-                        </select>
-                        <input type="text" id="jugador-name" placeholder="Nombre completo del estudiante" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30 focus:outline-none focus:border-colsam-secondary">
-                        <button type="submit" class="w-full bg-colsam-secondary text-colsam-dark font-bold px-4 py-2 rounded-xl mt-2">Inscribir Jugador</button>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Lista Jugadores -->
-            <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl">
-                <h3 class="font-bold text-colsam-accent mb-4">Nómina General</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3" id="jugadores-list">
-                    <!-- JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. VISTA: ADMINISTRADORES -->
-        <div id="view-admin" class="tab-content hidden flex flex-col gap-6">
-            <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl max-w-xl mx-auto w-full">
-                <h3 class="font-bold text-colsam-accent mb-4 flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5"></i> Registrar Nuevo Editor</h3>
-                <form onsubmit="handleCreateEditor(event)" class="space-y-4">
-                    <div><label class="text-xs text-colsam-light font-bold">Documento Identidad</label><input type="text" id="ed-doc" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
-                    <div><label class="text-xs text-colsam-light font-bold">Nombre Completo</label><input type="text" id="ed-name" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
-                    <div><label class="text-xs text-colsam-light font-bold">Correo Institucional</label><input type="email" id="ed-email" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
-                    <div><label class="text-xs text-colsam-light font-bold">Contraseña Asignada</label><input type="password" id="ed-pass" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
-                    <button type="submit" class="w-full bg-colsam-accent text-colsam-dark font-bold px-4 py-3 rounded-xl mt-2">Guardar Editor</button>
-                </form>
-            </div>
-        </div>
-
+    <main id="app-view">
+      <div class="spinner"></div>
     </main>
+  </div>
 
-    <!-- MODAL: LOGIN -->
-    <div id="loginModal" class="fixed inset-0 bg-colsam-dark/90 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-colsam-primary p-6 rounded-2xl w-full max-w-sm shadow-2xl border border-colsam-secondary/30">
-            <h3 class="text-lg font-bold text-colsam-accent mb-4">Acceso Restringido</h3>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="email" id="log-email" placeholder="Correo" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-3 border border-colsam-secondary/30">
-                <input type="password" id="log-pass" placeholder="Contraseña" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-3 border border-colsam-secondary/30">
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 bg-colsam-dark text-colsam-light font-bold py-3 rounded-xl hover:bg-colsam-dark/80">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-colsam-secondary text-colsam-dark font-bold py-3 rounded-xl">Entrar</button>
-                </div>
-            </form>
+  <div id="toast" class="toast"></div>
+
+  <div id="event-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 1rem;" id="modal-title">Registrar Evento</h3>
+      <form id="event-form">
+        <input type="hidden" id="event-match-id">
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Tipo de Evento</label>
+          <select id="event-type" class="btn btn-outline" style="width: 100%; justify-content: space-between;">
+            <option value="GOL">⚽ Gol / Anotación</option>
+            <option value="TARJETA_AMARILLA">🟨 Tarjeta Amarilla</option>
+            <option value="TARJETA_ROJA">🟥 Tarjeta Roja</option>
+            <option value="SUSTITUCION">🔄 Sustitución</option>
+          </select>
         </div>
-    </div>
-
-    <!-- MODAL: PROGRAMAR / EDITAR PARTIDO -->
-    <div id="matchModal" class="fixed inset-0 bg-colsam-dark/90 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto custom-scrollbar">
-        <div class="bg-colsam-primary p-6 rounded-2xl w-full max-w-lg shadow-2xl border border-colsam-secondary/30 my-8">
-            <h3 id="modalMatchTitle" class="text-lg font-bold text-colsam-accent mb-4">Programar Partido</h3>
-            
-            <form id="matchForm" onsubmit="handleSaveMatch(event)" class="space-y-4">
-                <input type="hidden" id="match-id">
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-colsam-light font-bold">Deporte</label>
-                        <select id="m-sport" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30">
-                            <option value="Futsal">Futsal</option>
-                            <option value="Balonmano">Balonmano</option>
-                            <option value="Voleibol">Voleibol</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs text-colsam-light font-bold">Fecha y Hora</label>
-                        <input type="text" id="m-date" placeholder="Ej: 20 May - 10:00 AM" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-colsam-light font-bold">Salón Local</label>
-                        <select id="m-team1" onchange="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 select-salones"></select>
-                    </div>
-                    <div>
-                        <label class="text-xs text-colsam-light font-bold">Salón Visitante</label>
-                        <select id="m-team2" onchange="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 select-salones"></select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs text-colsam-light font-bold">Goles / Puntos Local</label>
-                        <input type="number" id="m-score1" value="0" min="0" oninput="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 font-bold text-center">
-                    </div>
-                    <div>
-                        <label class="text-xs text-colsam-light font-bold">Goles / Puntos Visitante</label>
-                        <input type="number" id="m-score2" value="0" min="0" oninput="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 font-bold text-center">
-                    </div>
-                </div>
-
-                <!-- CARGA DE JUGADORES PARA GOLES -->
-                <div class="bg-colsam-dark p-4 rounded-xl border border-colsam-secondary/30">
-                    <h4 class="text-xs font-bold text-colsam-accent mb-2 uppercase">Asignar Puntos a Jugadores</h4>
-                    <p class="text-[10px] text-colsam-light mb-3">Selecciona al jugador que anotó cada tanto.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="scorers-container">
-                        <!-- Selects dinámicos de jugadores -->
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-xs text-colsam-light font-bold">Estado</label>
-                    <select id="m-status" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30">
-                        <option value="Programado">Programado</option>
-                        <option value="En Curso">En Curso</option>
-                        <option value="Finalizado">Finalizado</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('matchModal').classList.add('hidden')" class="flex-1 bg-colsam-dark text-colsam-light font-bold py-3 rounded-xl hover:bg-colsam-dark/80">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-colsam-secondary text-colsam-dark font-bold py-3 rounded-xl">Guardar</button>
-                </div>
-            </form>
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Equipo</label>
+          <select id="event-team" class="btn btn-outline" style="width: 100%;"></select>
         </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Jugador</label>
+          <input type="text" id="event-player-id" placeholder="Nombre o # del jugador" class="btn btn-outline" style="width: 100%; text-align: left;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Minuto</label>
+          <input type="number" id="event-minute" value="1" min="1" max="120" class="btn btn-outline" style="width: 100%; text-align: left;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-outline" onclick="UI.closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-accent">Guardar Evento</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- MAIN SCRIPT -->
-    <script>
-        // --- ESTADO GLOBAL (Memoria Volátil - Se borra al refrescar) ---
-        let sessionUser = null;
-        let dataMatches = [];
-        let dataSalones = [];
-        let dataJugadores = [];
-        let dataGoleadores = [];
+  <script>
+    /**
+     * ==========================================
+     * ESTADO GLOBAL Y CONFIGURACIÓN DE RUTAS
+     * ==========================================
+     */
+    const State = {
+      currentUser: null,
+      matches: [],
+      currentMatch: null,
+      pollInterval: null,
+      currentFilter: 'TODOS'
+    };
+
+    // Mapeo de navegación por Rol
+    const NAV_ITEMS = {
+      ADMINISTRADOR: [
+        { route: '#/dashboard', icon: 'fa-chart-pie', label: 'Dashboard' },
+        { route: '#/partidos', icon: 'fa-calendar-days', label: 'Partidos' },
+        { route: '#/deportes', icon: 'fa-volleyball', label: 'Deportes' },
+        { route: '#/torneos', icon: 'fa-trophy', label: 'Torneos' },
+        { route: '#/usuarios', icon: 'fa-users-gear', label: 'Usuarios' },
+        { route: '#/auditoria', icon: 'fa-shield-halved', label: 'Auditoría' }
+      ],
+      EDITOR: [
+        { route: '#/dashboard', icon: 'fa-chart-pie', label: 'Mis Partidos' },
+        { route: '#/partidos', icon: 'fa-calendar-days', label: 'Todos los Partidos' }
+      ],
+      JUGADOR: [
+        { route: '#/dashboard', icon: 'fa-house', label: 'Mi Panel' },
+        { route: '#/inscribir', icon: 'fa-key', label: 'Ingresar Código' },
+        { route: '#/partidos', icon: 'fa-calendar-days', label: 'Partidos' }
+      ]
+    };
+
+    /**
+     * ==========================================
+     * CLIENTE DE API BACKEND (GAS WRAPPER)
+     * ==========================================
+     */
+    const API = {
+      call: function(serverFunction, ...args) {
+        return new Promise((resolve, reject) => {
+          if (typeof google !== 'undefined' && google.script && google.script.run) {
+            google.script.run
+              .withSuccessHandler(response => resolve(response))
+              .withFailureHandler(err => reject(err))[serverFunction](...args);
+          } else {
+            // Mock local para desarrollo visual
+            console.warn(`[DEV MOCK] Ejecutando ${serverFunction}`, args);
+            setTimeout(() => resolve(API._getMockResponse(serverFunction, args)), 400);
+          }
+        });
+      },
+
+      _getMockResponse: function(fn, args) {
+        if (fn === 'getCurrentUser') {
+          return {
+            success: true,
+            data: { id: 'USR1', email: 'admin@colegio.edu.co', nombre: 'Admin', apellido: 'Colsam', rol: 'ADMINISTRADOR' }
+          };
+        }
+        if (fn === 'getDashboard') {
+          return {
+            success: true,
+            data: { partidosHoy: 3, partidosEnVivo: 1, finalizados: 8, totalJugadores: 140 }
+          };
+        }
+        if (fn === 'getMatches') {
+          return {
+            success: true,
+            data: [
+              { id: 'M1', codigo: 'FUT-8K4P2', deporte: 'Fútbol', torneo: 'Intercurso 10-11', local: '10A', visitante: '11B', marcadorLocal: 2, marcadorVisitante: 1, estado: 'EN_VIVO', fecha: 'Hoy', hora: '10:00 AM', escenario: 'Cancha Principal', minuto: "42'" },
+              { id: 'M2', codigo: 'BAL-7H9XQ', deporte: 'Baloncesto', torneo: 'Intercurso 8-9', local: '8B', visitante: '9A', marcadorLocal: 0, marcadorVisitante: 0, estado: 'PROGRAMADO', fecha: 'Hoy', hora: '11:30 AM', escenario: 'Coliseo' },
+              { id: 'M3', codigo: 'VOL-3M7RT', deporte: 'Voleibol', torneo: 'Intercurso Femenino', local: '10B', visitante: '11A', marcadorLocal: 2, marcadorVisitante: 0, estado: 'FINALIZADO', fecha: 'Ayer', hora: '02:00 PM', escenario: 'Cancha 2' }
+            ]
+          };
+        }
+        return { success: true, data: {} };
+      }
+    };
+
+    /**
+     * ==========================================
+     * ENRUTADOR DE LA SPA
+     * ==========================================
+     */
+    const Router = {
+      init: function() {
+        window.addEventListener('hashchange', () => this.route());
+        this.route();
+      },
+
+      route: function() {
+        // Limpiar polling de en vivo al cambiar de ruta
+        if (State.pollInterval) {
+          clearInterval(State.pollInterval);
+          State.pollInterval = null;
+        }
+
+        const hash = window.location.hash || '#/dashboard';
+        const appView = document.getElementById('app-view');
         
-        let filterMSport = 'todos';
-        let filterLSport = 'Futsal';
-        let filterSSport = 'Futsal';
+        // Actualizar nav activa
+        document.querySelectorAll('.nav-link').forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === hash);
+        });
 
-        // Inicialización
-        window.onload = () => {
-            lucide.createIcons();
-            // Evitamos localStorage para cumplir regla: "al refrescar, cierra sesión"
-            updateAuthUI();
-            fetchData();
-        };
+        // Parsear parámetros de la ruta (ej. #/partido/M1)
+        const matchDetailRoute = hash.match(/^#\/partido\/(.+)$/);
 
-        // --- SISTEMA DE SESIÓN ---
-        function handleAuth() {
-            if (sessionUser) {
-                // Cerrar Sesión
-                sessionUser = null;
-                updateAuthUI();
-                switchTab('matches');
-                renderMatches(); // Re-render sin botones de edición
-                alert("Sesión cerrada correctamente.");
-            } else {
-                document.getElementById('loginModal').classList.remove('hidden');
-            }
+        if (hash === '#/dashboard') {
+          Views.renderDashboard(appView);
+        } else if (hash === '#/partidos') {
+          Views.renderMatchesList(appView);
+        } else if (hash === '#/inscribir') {
+          Views.renderPlayerJoin(appView);
+        } else if (matchDetailRoute) {
+          Views.renderMatchDetail(appView, matchDetailRoute[1]);
+        } else {
+          appView.innerHTML = `
+            <div class="card" style="text-align: center; padding: 3rem;">
+              <h2>404 - Vista no encontrada</h2>
+              <p style="color: var(--text-muted); margin: 1rem 0;">La sección solicitada no existe o no tienes permisos.</p>
+              <a href="#/dashboard" class="btn btn-primary">Volver al Dashboard</a>
+            </div>
+          `;
+        }
+      }
+    };
+
+    /**
+     * ==========================================
+     * COMPONENTES DE VISTAS (RENDERERS)
+     * ==========================================
+     */
+    const Views = {
+      renderDashboard: async function(container) {
+        UI.setTitle('Dashboard General');
+        container.innerHTML = '<div class="spinner"></div>';
+
+        try {
+          const resDash = await API.call('getDashboard');
+          const resMatches = await API.call('getMatches');
+
+          if (!resDash.success) throw new Error(resDash.message);
+
+          const d = resDash.data;
+          const liveMatch = resMatches.data.find(m => m.estado === 'EN_VIVO');
+
+          container.innerHTML = `
+            <div class="grid-4" style="margin-bottom: 2rem;">
+              <div class="card stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-play"></i></div>
+                <div><div class="stat-value">${d.partidosEnVivo}</div><div class="stat-label">En Vivo Ahora</div></div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-calendar"></i></div>
+                <div><div class="stat-value">${d.partidosHoy}</div><div class="stat-label">Partidos Hoy</div></div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+                <div><div class="stat-value">${d.finalizados}</div><div class="stat-label">Finalizados</div></div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                <div><div class="stat-value">${d.totalJugadores}</div><div class="stat-label">Jugadores Activos</div></div>
+              </div>
+            </div>
+
+            ${State.currentUser.rol === 'JUGADOR' ? `
+              <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e3a8a, #0f172a); color: #fff;">
+                <h2 style="margin-bottom: 0.5rem;">¿Tienes un Partido Intercurso?</h2>
+                <p style="color: #94a3b8; margin-bottom: 1.5rem;">Ingresa el código proporcionado por la organización para inscribirte a la planilla oficial.</p>
+                <a href="#/inscribir" class="btn btn-accent"><i class="fa-solid fa-key"></i> Ingresar Código de Partido</a>
+              </div>
+            ` : ''}
+
+            ${liveMatch ? `
+              <div class="card" style="border-left: 4px solid var(--live-red);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <span class="badge badge-live"><span class="dot"></span> DESTACADO EN VIVO</span>
+                  <span style="font-size: 0.85rem; color: var(--text-muted);">${liveMatch.deporte} —${liveMatch.torneo}</span>
+                </div>
+                <div class="match-teams">
+                  <div class="team">${liveMatch.local}</div>
+                  <div class="score-box">${liveMatch.marcadorLocal} -${liveMatch.marcadorVisitante}</div>
+                  <div class="team">${liveMatch.visitante}</div>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                  <a href="#/partido/${liveMatch.id}" class="btn btn-primary btn-sm">Ver Transmisión / Control</a>
+                </div>
+              </div>
+            ` : ''}
+          `;
+        } catch (err) {
+          UI.showToast('Error al cargar datos del dashboard', 'error');
+        }
+      },
+
+      renderMatchesList: async function(container) {
+        UI.setTitle('Partidos Intercurso');
+        container.innerHTML = '<div class="spinner"></div>';
+
+        try {
+          const res = await API.call('getMatches');
+          if (!res.success) throw new Error(res.message);
+          State.matches = res.data;
+
+          container.innerHTML = `
+            <div class="filter-tabs">
+              <button class="tab-btn ${State.currentFilter === 'TODOS' ? 'active' : ''}" onclick="Views.filterMatches('TODOS')">Todos</button>
+              <button class="tab-btn ${State.currentFilter === 'EN_VIVO' ? 'active' : ''}" onclick="Views.filterMatches('EN_VIVO')">🔴 En Vivo</button>
+              <button class="tab-btn ${State.currentFilter === 'PROGRAMADO' ? 'active' : ''}" onclick="Views.filterMatches('PROGRAMADO')">Próximos</button>
+              <button class="tab-btn ${State.currentFilter === 'FINALIZADO' ? 'active' : ''}" onclick="Views.filterMatches('FINALIZADO')">Finalizados</button>
+            </div>
+            <div class="grid-2" id="matches-grid">
+              ${Views._buildMatchCardsHtml(State.matches)}
+            </div>
+          `;
+        } catch (err) {
+          UI.showToast('Error al obtener lista de partidos', 'error');
+        }
+      },
+
+      filterMatches: function(filter) {
+        State.currentFilter = filter;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+
+        const filtered = filter === 'TODOS' 
+          ? State.matches 
+          : State.matches.filter(m => m.estado === filter);
+
+        document.getElementById('matches-grid').innerHTML = Views._buildMatchCardsHtml(filtered);
+      },
+
+      _buildMatchCardsHtml: function(matches) {
+        if (!matches || matches.length === 0) {
+          return `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No hay partidos disponibles en esta categoría.</div>`;
         }
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('log-email').value;
-            const pass = document.getElementById('log-pass').value;
+        return matches.map(m => `
+          <div class="match-card" onclick="window.location.hash='#/partido/${m.id}'">
+            <div class="match-header">
+              <span><strong>${m.deporte}</strong> • ${m.torneo}</span>
+              ${m.estado === 'EN_VIVO' 
+                ? `<span class="badge badge-live"><span class="dot"></span> EN VIVO ${m.minuto || ''}</span>`
+                : m.estado === 'FINALIZADO' 
+                ? `<span class="badge badge-finished">FINALIZADO</span>`
+                : `<span class="badge badge-scheduled">PROGRAMADO</span>`
+              }
+            </div>
+            <div class="match-teams">
+              <div class="team">${m.local}</div>
+              <div class="score-box">${m.marcadorLocal} - ${m.marcadorVisitante}</div>
+              <div class="team">${m.visitante}</div>
+            </div>
+            <div class="match-footer">
+              <span><i class="fa-solid fa-location-dot"></i> ${m.escenario}</span>
+              <span><i class="fa-regular fa-clock"></i> ${m.hora} (${m.fecha})</span>
+            </div>
+          </div>
+        `).join('');
+      },
 
-            document.getElementById('btnAuthText').textContent = "Verificando...";
+      renderPlayerJoin: function(container) {
+        UI.setTitle('Inscripción de Jugador');
+        container.innerHTML = `
+          <div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+            <i class="fa-solid fa-qrcode" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h2>Ingresar Código de Partido</h2>
+            <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0; font-size: 0.9rem;">
+              Solicita el código único al capitán o editor deportivo responsable (Ejemplo: FUT-8K4P2).
+            </p>
+            <form onsubmit="Views.handleJoinSubmit(event)">
+              <input type="text" id="match-code-input" class="input-code" placeholder="FUT-XXXXX" required maxlength="10">
+              <br>
+              <button type="submit" class="btn btn-accent" style="width: 100%; max-width: 320px; justify-content: center;">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Buscar Partido
+              </button>
+            </form>
+            <div id="join-result" style="margin-top: 1.5rem;"></div>
+          </div>
+        `;
+      },
 
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run
-                    .withSuccessHandler(res => {
-                        if (res.success) {
-                            sessionUser = res.user;
-                            updateAuthUI();
-                            document.getElementById('loginModal').classList.add('hidden');
-                            renderMatches();
-                        } else {
-                            alert("Credenciales incorrectas");
-                            document.getElementById('btnAuthText').textContent = "Ingresar";
-                        }
-                    })
-                    .validarLogin(email, pass);
-            } else {
-                // Simulación Local
-                if (email === "admin" && pass === "admin") {
-                    sessionUser = { nombre: "Admin Local", rol: "admin" };
-                } else {
-                    sessionUser = { nombre: "Editor Local", rol: "editor" };
-                }
-                updateAuthUI();
-                document.getElementById('loginModal').classList.add('hidden');
-                renderMatches();
-            }
+      handleJoinSubmit: async function(e) {
+        e.preventDefault();
+        const code = document.getElementById('match-code-input').value.trim().toUpperCase();
+        const resultDiv = document.getElementById('join-result');
+        resultDiv.innerHTML = '<div class="spinner"></div>';
+
+        try {
+          const res = await API.call('getMatches');
+          const match = res.data.find(m => m.codigo === code);
+
+          if (match) {
+            resultDiv.innerHTML = `
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1rem; border-radius: var(--radius-sm); text-align: left;">
+                <h4 style="color: #166534;">Partido Encontrado</h4>
+                <p><strong>Deporte:</strong> ${match.deporte}</p>
+                <p><strong>Encuentro:</strong> ${match.local} vs ${match.visitante}</p>
+                <p><strong>Escenario:</strong> ${match.escenario} (${match.hora})</p>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="Views.confirmRegistration('${match.id}')">
+                  Confirmar Mi Inscripción
+                </button>
+              </div>
+            `;
+          } else {
+            resultDiv.innerHTML = `<div style="color: var(--live-red); font-weight: 600;">Código no encontrado o caducado.</div>`;
+          }
+        } catch (err) {
+          resultDiv.innerHTML = `<div style="color: var(--live-red);">Error al validar código.</div>`;
         }
+      },
 
-        function updateAuthUI() {
-            const btnAuthText = document.getElementById('btnAuthText');
-            const btnAuthAction = document.getElementById('btnAuthAction');
-            const userInfo = document.getElementById('userInfoHeader');
-            const userName = document.getElementById('userNameText');
-            
-            const btnNewMatch = document.getElementById('btnNewMatch');
-            const tabMgmt = document.getElementById('tab-management');
-            const tabAdmin = document.getElementById('tab-admin');
-
-            if (sessionUser) {
-                btnAuthText.textContent = "Salir";
-                btnAuthAction.classList.replace('bg-colsam-secondary', 'bg-red-400');
-                btnAuthAction.classList.replace('text-colsam-dark', 'text-white');
-                userInfo.classList.remove('hidden');
-                userInfo.classList.add('flex');
-                userName.textContent = sessionUser.nombre;
-                
-                btnNewMatch.classList.remove('hidden');
-                btnNewMatch.classList.add('flex');
-                tabMgmt.classList.remove('hidden');
-                tabMgmt.classList.add('flex');
-
-                if (sessionUser.rol === 'admin') {
-                    tabAdmin.classList.remove('hidden');
-                    tabAdmin.classList.add('flex');
-                } else {
-                    tabAdmin.classList.add('hidden');
-                    tabAdmin.classList.remove('flex');
-                }
-            } else {
-                btnAuthText.textContent = "Ingresar";
-                btnAuthAction.classList.replace('bg-red-400', 'bg-colsam-secondary');
-                btnAuthAction.classList.replace('text-white', 'text-colsam-dark');
-                userInfo.classList.add('hidden');
-                userInfo.classList.remove('flex');
-                
-                btnNewMatch.classList.add('hidden');
-                btnNewMatch.classList.remove('flex');
-                tabMgmt.classList.add('hidden');
-                tabMgmt.classList.remove('flex');
-                tabAdmin.classList.add('hidden');
-                tabAdmin.classList.remove('flex');
-            }
+      confirmRegistration: async function(matchId) {
+        try {
+          const res = await API.call('registerPlayer', matchId);
+          if (res.success) {
+            UI.showToast('¡Inscripción registrada con éxito!');
+            window.location.hash = `#/partido/${matchId}`;
+          } else {
+            UI.showToast(res.message, 'error');
+          }
+        } catch (err) {
+          UI.showToast('No se pudo completar el registro.', 'error');
         }
+      },
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
+      renderMatchDetail: async function(container, matchId) {
+        container.innerHTML = '<div class="spinner"></div>';
+        
+        try {
+          const res = await API.call('getMatches');
+          const match = res.data.find(m => m.id === matchId);
 
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-colsam-secondary', 'text-colsam-dark');
-                btn.classList.add('bg-colsam-primary', 'text-colsam-light');
-            });
+          if (!match) {
+            container.innerHTML = '<h2>Partido no encontrado</h2>';
+            return;
+          }
 
-            const activeBtn = document.getElementById(`tab-${tab}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-colsam-primary', 'text-colsam-light');
-                activeBtn.classList.add('bg-colsam-secondary', 'text-colsam-dark');
-            }
+          UI.setTitle(`Partido ${match.codigo}`);
+          const isEditor = State.currentUser.rol === 'ADMINISTRADOR' || State.currentUser.rol === 'EDITOR';
+
+          container.innerHTML = `
+            <div class="live-console">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge ${match.estado === 'EN_VIVO' ? 'badge-live' : 'badge-scheduled'}">
+                  ${match.estado === 'EN_VIVO' ? '<span class="dot"></span> EN VIVO' : match.estado}
+                </span>
+                <span style="font-size: 0.9rem; opacity: 0.8;">Código: <strong>${match.codigo}</strong></span>
+              </div>
+
+              <div class="match-teams" style="margin: 2rem 0;">
+                <div class="team" style="font-size: 1.5rem;">${match.local}</div>
+                <div class="live-score-big">${match.marcadorLocal} - ${match.marcadorVisitante}</div>
+                <div class="team" style="font-size: 1.5rem;">${match.visitante}</div>
+              </div>
+
+              <p style="font-size: 0.9rem; opacity: 0.8;">
+                <i class="fa-solid fa-location-dot"></i> ${match.escenario} | <i class="fa-regular fa-clock"></i> ${match.hora}
+              </p>
+
+              ${isEditor ? `
+                <div class="quick-actions">
+                  <button class="btn btn-accent" onclick="UI.openEventModal('${match.id}', '${match.local}', '${match.visitante}')">
+                    <i class="fa-solid fa-plus"></i> Registrar Evento
+                  </button>
+                  ${match.estado !== 'EN_VIVO' ? `
+                    <button class="btn btn-primary" onclick="Views.changeMatchState('${match.id}', 'INICIAR')">▶ Iniciar Partido</button>
+                  ` : `
+                    <button class="btn btn-danger" onclick="Views.changeMatchState('${match.id}', 'FINALIZAR')">⏹ Finalizar Partido</button>
+                  `}
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="card">
+              <h3><i class="fa-solid fa-list-timeline"></i> Eventos del Partido</h3>
+              <ul class="timeline" style="margin-top: 1.5rem;">
+                <li class="timeline-item">
+                  <div class="timeline-icon"></div>
+                  <strong>42' ⚽ Gol — Juan Pérez</strong> (${match.local})
+                </li>
+                <li class="timeline-item">
+                  <div class="timeline-icon" style="background: var(--warning);"></div>
+                  <strong>28' 🟨 Tarjeta Amarilla — Carlos López</strong> (${match.visitante})
+                </li>
+              </ul>
+            </div>
+          `;
+
+          // Activar Polling si el partido está en vivo
+          if (match.estado === 'EN_VIVO') {
+            State.pollInterval = setInterval(() => {
+              console.log('[POLLING] Actualizando estado en vivo...');
+            }, 10000);
+          }
+
+        } catch (err) {
+          UI.showToast('Error al cargar detalle del partido', 'error');
         }
+      },
 
-        // --- FETCH DE DATOS ---
-        function fetchData() {
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(res => {
-                    dataMatches = res.partidos || [];
-                    dataSalones = res.salones || [];
-                    dataJugadores = res.jugadores || [];
-                    dataGoleadores = res.goleadores || [];
-                    
-                    updateSalonesUI();
-                    renderMatches();
-                    renderLeaderboard();
-                    renderScorers();
-                }).obtenerDatosGlobales();
-            } else {
-                // Mock Local
-                dataSalones = [{id: 1, nombre: '11A'}, {id: 2, nombre: '10B'}];
-                dataJugadores = [{id: 1, nombre: 'Juan Perez', salon: '11A'}];
-                dataMatches = [{id: 1, deporte: 'Futsal', equipo1: '11A', equipo2: '10B', fecha: 'Hoy', estado: 'Programado', goles1: 0, goles2: 0}];
-                updateSalonesUI();
-                renderMatches();
-            }
+      changeMatchState: function(matchId, action) {
+        UI.showToast(`Estado del partido cambiado: ${action}`);
+        Router.route();
+      }
+    };
+
+    /**
+     * ==========================================
+     * MANEJO DE INTERFAZ Y MODALES
+     * ==========================================
+     */
+    const UI = {
+      setTitle: function(title) {
+        document.getElementById('page-title').textContent = title;
+      },
+
+      showToast: function(msg, type = 'info') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.background = type === 'error' ? 'var(--live-red)' : 'var(--primary-dark)';
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3500);
+      },
+
+      openEventModal: function(matchId, localTeam, visitanteTeam) {
+        document.getElementById('event-match-id').value = matchId;
+        const selectTeam = document.getElementById('event-team');
+        selectTeam.innerHTML = `
+          <option value="${localTeam}">${localTeam}</option>
+          <option value="${visitanteTeam}">${visitanteTeam}</option>
+        `;
+        document.getElementById('event-modal').classList.add('active');
+      },
+
+      closeModal: function() {
+        document.getElementById('event-modal').classList.remove('active');
+      },
+
+      renderSidebarNav: function(rol) {
+        const menuContainer = document.getElementById('nav-menu');
+        const items = NAV_ITEMS[rol] || NAV_ITEMS.JUGADOR;
+
+        menuContainer.innerHTML = items.map(item => `
+          <li class="nav-item">
+            <a href="${item.route}" class="nav-link">
+              <i class="fa-solid ${item.icon}"></i>
+              <span>${item.label}</span>
+            </a>
+          </li>
+        `).join('');
+      },
+
+      updateClock: function() {
+        const now = new Date();
+        const options = { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        document.getElementById('current-time').textContent = `Bogotá: ${now.toLocaleTimeString('es-CO', options)}`;
+      }
+    };
+
+    /**
+     * ==========================================
+     * INICIALIZACIÓN DE LA APLICACIÓN
+     * ==========================================
+     */
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Reloj institucional
+      UI.updateClock();
+      setInterval(UI.updateClock, 1000);
+
+      // Event Listeners UI
+      document.getElementById('mobile-toggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('open');
+      });
+
+      document.getElementById('event-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        UI.closeModal();
+        UI.showToast('Evento registrado en vivo correctamente');
+      });
+
+      // Autenticación inicial del usuario
+      try {
+        const userRes = await API.call('getCurrentUser');
+        if (userRes.success) {
+          State.currentUser = userRes.data;
+          document.getElementById('user-name').textContent = `${State.currentUser.nombre} ${State.currentUser.apellido}`;
+          document.getElementById('user-role').textContent = State.currentUser.rol;
+          document.getElementById('user-avatar').textContent = State.currentUser.nombre.charAt(0);
+
+          // Cargar menú acorde al rol asignado
+          UI.renderSidebarNav(State.currentUser.rol);
+
+          // Inicializar enrutador SPA
+          Router.init();
+        } else {
+          document.getElementById('app-view').innerHTML = '<h2>Error de Autenticación</h2>';
         }
-
-        // --- 1. PARTIDOS ---
-        function filterMatches(sport) {
-            filterMSport = sport;
-            const btns = ['todos', 'futsal', 'balonmano', 'voleibol'];
-            btns.forEach(b => {
-                const btn = document.getElementById(`btn-m-${b}`);
-                if (b === sport.toLowerCase() || (sport === 'todos' && b === 'todos')) {
-                    btn.classList.replace('bg-colsam-dark', 'bg-colsam-secondary');
-                    btn.classList.replace('text-colsam-light', 'text-colsam-dark');
-                } else {
-                    btn.classList.replace('bg-colsam-secondary', 'bg-colsam-dark');
-                    btn.classList.replace('text-colsam-dark', 'text-colsam-light');
-                }
-            });
-            renderMatches();
-        }
-
-        function renderMatches() {
-            const grid = document.getElementById('matches-grid');
-            grid.innerHTML = '';
-            
-            let filtered = dataMatches;
-            if (filterMSport !== 'todos') filtered = dataMatches.filter(m => m.deporte === filterMSport);
-
-            filtered.forEach(m => {
-                const isFinal = m.estado === 'Finalizado';
-                const div = document.createElement('div');
-                div.className = "bg-colsam-primary border border-colsam-secondary/20 p-5 rounded-2xl flex flex-col justify-between";
-                
-                let controls = '';
-                if (sessionUser) {
-                    controls = `<button onclick="openMatchModal(${m.id})" class="text-colsam-accent text-xs font-bold bg-colsam-dark px-3 py-1.5 rounded-lg hover:bg-colsam-secondary hover:text-colsam-dark transition">Registrar / Editar</button>`;
-                }
-
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-colsam-secondary bg-colsam-dark px-2 py-1 rounded-md">${m.deporte}</span>
-                        <span class="text-xs text-colsam-light">${m.fecha}</span>
-                    </div>
-                    <div class="flex justify-between items-center py-4">
-                        <div class="text-center flex-1 font-bold text-white">${m.equipo1}</div>
-                        <div class="px-4 text-center">
-                            ${m.estado === 'Programado' ? 
-                              `<span class="text-colsam-accent font-bold text-sm bg-colsam-dark px-3 py-1 rounded-lg">VS</span>` : 
-                              `<span class="text-white font-extrabold text-lg bg-colsam-dark px-4 py-1.5 rounded-xl border border-colsam-secondary/30">${m.goles1} - ${m.goles2}</span>`
-                            }
-                        </div>
-                        <div class="text-center flex-1 font-bold text-white">${m.equipo2}</div>
-                    </div>
-                    <div class="flex justify-between items-center mt-2 border-t border-colsam-secondary/20 pt-3">
-                        <span class="text-[10px] font-bold ${isFinal ? 'text-green-400' : 'text-amber-400'} uppercase">${m.estado}</span>
-                        ${controls}
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-        }
-
-        // --- GESTIÓN DE PARTIDOS Y GOLES ---
-        function openMatchModal(id = null) {
-            document.getElementById('matchForm').reset();
-            document.getElementById('scorers-container').innerHTML = '';
-            
-            // Llenar selects de salones
-            const selects = document.querySelectorAll('.select-salones');
-            selects.forEach(sel => {
-                sel.innerHTML = '<option value="">Selecciona salón...</option>';
-                dataSalones.forEach(s => {
-                    sel.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
-                });
-            });
-
-            if (id) {
-                document.getElementById('modalMatchTitle').textContent = "Registrar Resultado";
-                const m = dataMatches.find(x => x.id === id);
-                document.getElementById('match-id').value = m.id;
-                document.getElementById('m-sport').value = m.deporte;
-                document.getElementById('m-date').value = m.fecha;
-                document.getElementById('m-team1').value = m.equipo1;
-                document.getElementById('m-team2').value = m.equipo2;
-                document.getElementById('m-score1').value = m.goles1;
-                document.getElementById('m-score2').value = m.goles2;
-                document.getElementById('m-status').value = m.estado;
-                generateScorersSelects();
-            } else {
-                document.getElementById('modalMatchTitle').textContent = "Programar Partido";
-                document.getElementById('match-id').value = '';
-            }
-
-            document.getElementById('matchModal').classList.remove('hidden');
-        }
-
-        function generateScorersSelects() {
-            const team1 = document.getElementById('m-team1').value;
-            const team2 = document.getElementById('m-team2').value;
-            const score1 = parseInt(document.getElementById('m-score1').value) || 0;
-            const score2 = parseInt(document.getElementById('m-score2').value) || 0;
-            const container = document.getElementById('scorers-container');
-            container.innerHTML = '';
-
-            // Generar inputs para Equipo 1
-            if (score1 > 0 && team1) {
-                let div = document.createElement('div');
-                div.innerHTML = `<h5 class="text-[10px] font-bold text-colsam-secondary uppercase mb-2">Goles de ${team1}</h5>`;
-                const players1 = dataJugadores.filter(j => j.salon === team1);
-                
-                for(let i=0; i<score1; i++) {
-                    let sel = `<select class="w-full mb-1 bg-colsam-primary text-white text-xs px-2 py-1.5 rounded-lg border border-colsam-secondary/30 scorer-team1" required><option value="">¿Quién anotó?</option>`;
-                    players1.forEach(p => sel += `<option value="${p.nombre}">${p.nombre}</option>`);
-                    sel += `</select>`;
-                    div.innerHTML += sel;
-                }
-                container.appendChild(div);
-            }
-
-            // Generar inputs para Equipo 2
-            if (score2 > 0 && team2) {
-                let div = document.createElement('div');
-                div.innerHTML = `<h5 class="text-[10px] font-bold text-colsam-secondary uppercase mb-2">Goles de ${team2}</h5>`;
-                const players2 = dataJugadores.filter(j => j.salon === team2);
-                
-                for(let i=0; i<score2; i++) {
-                    let sel = `<select class="w-full mb-1 bg-colsam-primary text-white text-xs px-2 py-1.5 rounded-lg border border-colsam-secondary/30 scorer-team2" required><option value="">¿Quién anotó?</option>`;
-                    players2.forEach(p => sel += `<option value="${p.nombre}">${p.nombre}</option>`);
-                    sel += `</select>`;
-                    div.innerHTML += sel;
-                }
-                container.appendChild(div);
-            }
-        }
-
-        function handleSaveMatch(e) {
-            e.preventDefault();
-            const team1 = document.getElementById('m-team1').value;
-            const team2 = document.getElementById('m-team2').value;
-            if(team1 === team2) return alert("Los salones deben ser distintos.");
-
-            // Recolectar goleadores asignados
-            const assignedScorers = [];
-            document.querySelectorAll('.scorer-team1').forEach(s => { if(s.value) assignedScorers.push({jugador: s.value, salon: team1}); });
-            document.querySelectorAll('.scorer-team2').forEach(s => { if(s.value) assignedScorers.push({jugador: s.value, salon: team2}); });
-
-            const matchData = {
-                id: document.getElementById('match-id').value || Date.now(),
-                deporte: document.getElementById('m-sport').value,
-                fecha: document.getElementById('m-date').value,
-                equipo1: team1,
-                equipo2: team2,
-                goles1: document.getElementById('m-score1').value,
-                goles2: document.getElementById('m-score2').value,
-                estado: document.getElementById('m-status').value,
-                goleadoresInfo: assignedScorers
-            };
-
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(res => {
-                    dataMatches = res.partidos;
-                    dataGoleadores = res.goleadores;
-                    document.getElementById('matchModal').classList.add('hidden');
-                    renderMatches();
-                    renderLeaderboard();
-                    renderScorers();
-                    alert("Partido guardado con éxito.");
-                }).guardarPartidoYGoles(matchData);
-            } else {
-                alert("Guardado local.");
-                document.getElementById('matchModal').classList.add('hidden');
-            }
-        }
-
-        // --- GESTIÓN DE TORNEO (SALONES Y JUGADORES) ---
-        function updateSalonesUI() {
-            // Actualizar lista en pestaña
-            const list = document.getElementById('salones-list');
-            list.innerHTML = '';
-            dataSalones.forEach(s => {
-                list.innerHTML += `<span class="bg-colsam-dark text-colsam-secondary border border-colsam-secondary/30 px-3 py-1 rounded-lg text-xs font-bold">${s.nombre}</span>`;
-            });
-
-            // Actualizar select de inscribir jugador
-            const select = document.getElementById('jugador-salon');
-            select.innerHTML = '<option value="">Selecciona salón...</option>';
-            dataSalones.forEach(s => {
-                select.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
-            });
-
-            // Actualizar tabla nomina
-            const jList = document.getElementById('jugadores-list');
-            jList.innerHTML = '';
-            dataJugadores.forEach(j => {
-                jList.innerHTML += `
-                    <div class="bg-colsam-dark p-2 rounded-lg border border-colsam-secondary/30 flex justify-between items-center text-xs">
-                        <span class="font-bold text-white">${j.nombre}</span>
-                        <span class="text-colsam-secondary bg-colsam-primary px-2 py-0.5 rounded font-bold">${j.salon}</span>
-                    </div>
-                `;
-            });
-        }
-
-        function handleCreateSalon(e) {
-            e.preventDefault();
-            const name = document.getElementById('salon-name').value.trim();
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(res => {
-                    dataSalones = res.salones;
-                    updateSalonesUI();
-                    document.getElementById('salon-name').value = '';
-                }).crearSalon(name);
-            }
-        }
-
-        function handleCreateJugador(e) {
-            e.preventDefault();
-            const salon = document.getElementById('jugador-salon').value;
-            const name = document.getElementById('jugador-name').value.trim();
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(res => {
-                    dataJugadores = res.jugadores;
-                    updateSalonesUI();
-                    document.getElementById('jugador-name').value = '';
-                }).crearJugador(name, salon);
-            }
-        }
-
-        // --- CÁLCULO DE TABLAS Y GOLEADORES ---
-        function filterLeaderboard(sport) {
-            filterLSport = sport;
-            const btns = ['Futsal', 'Balonmano', 'Voleibol'];
-            btns.forEach(b => {
-                const btn = document.getElementById(`btn-l-${b.toLowerCase()}`);
-                if (b === sport) {
-                    btn.classList.replace('bg-colsam-dark', 'bg-colsam-secondary');
-                    btn.classList.replace('text-colsam-light', 'text-colsam-dark');
-                } else {
-                    btn.classList.replace('bg-colsam-secondary', 'bg-colsam-dark');
-                    btn.classList.replace('text-colsam-dark', 'text-colsam-light');
-                }
-            });
-            renderLeaderboard();
-        }
-
-        function renderLeaderboard() {
-            const tbody = document.getElementById('leaderboard-body');
-            tbody.innerHTML = '';
-
-            let table = {};
-            dataSalones.forEach(s => { table[s.nombre] = { pj:0, pg:0, pe:0, pp:0, pts:0 }; });
-
-            dataMatches.forEach(m => {
-                if (m.deporte === filterLSport && m.estado === 'Finalizado') {
-                    if(!table[m.equipo1]) table[m.equipo1] = { pj:0, pg:0, pe:0, pp:0, pts:0 };
-                    if(!table[m.equipo2]) table[m.equipo2] = { pj:0, pg:0, pe:0, pp:0, pts:0 };
-                    
-                    let g1 = parseInt(m.goles1);
-                    let g2 = parseInt(m.goles2);
-                    
-                    table[m.equipo1].pj++;
-                    table[m.equipo2].pj++;
-
-                    if (g1 > g2) { table[m.equipo1].pg++; table[m.equipo1].pts += 3; table[m.equipo2].pp++; }
-                    else if (g1 < g2) { table[m.equipo2].pg++; table[m.equipo2].pts += 3; table[m.equipo1].pp++; }
-                    else { table[m.equipo1].pe++; table[m.equipo1].pts += 1; table[m.equipo2].pe++; table[m.equipo2].pts += 1; }
-                }
-            });
-
-            const sorted = Object.keys(table).map(k => ({salon: k, ...table[k]})).sort((a,b) => b.pts - a.pts);
-
-            sorted.forEach((row, i) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-colsam-dark transition">
-                        <td class="p-4 text-center font-bold text-colsam-secondary">${i+1}</td>
-                        <td class="p-4 font-bold text-white">${row.salon}</td>
-                        <td class="p-3 text-center text-colsam-light">${row.pj}</td>
-                        <td class="p-3 text-center text-green-400">${row.pg}</td>
-                        <td class="p-3 text-center text-colsam-light">${row.pe}</td>
-                        <td class="p-3 text-center text-red-400">${row.pp}</td>
-                        <td class="p-4 text-right font-black text-colsam-accent text-base">${row.pts}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function filterScorers(sport) {
-            filterSSport = sport;
-            const btns = ['Futsal', 'Balonmano', 'Voleibol'];
-            btns.forEach(b => {
-                const btn = document.getElementById(`btn-s-${b.toLowerCase()}`);
-                if (b === sport) {
-                    btn.classList.replace('bg-colsam-dark', 'bg-colsam-secondary');
-                    btn.classList.replace('text-colsam-light', 'text-colsam-dark');
-                } else {
-                    btn.classList.replace('bg-colsam-secondary', 'bg-colsam-dark');
-                    btn.classList.replace('text-colsam-dark', 'text-colsam-light');
-                }
-            });
-            renderScorers();
-        }
-
-        function renderScorers() {
-            const grid = document.getElementById('scorers-grid');
-            grid.innerHTML = '';
-            
-            const filtered = dataGoleadores.filter(g => g.deporte === filterSSport).sort((a,b) => b.goles - a.goles);
-            
-            filtered.forEach((g, i) => {
-                grid.innerHTML += `
-                    <div class="bg-colsam-primary border border-colsam-secondary/30 p-4 rounded-xl flex items-center justify-between shadow">
-                        <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-md bg-colsam-dark text-colsam-accent font-bold flex justify-center items-center text-xs">${i+1}</span>
-                            <div>
-                                <h4 class="font-bold text-white text-sm">${g.jugador}</h4>
-                                <span class="text-[10px] text-colsam-secondary uppercase tracking-widest font-bold">${g.salon}</span>
-                            </div>
-                        </div>
-                        <div class="bg-colsam-dark px-3 py-1.5 rounded-lg text-right">
-                            <span class="block text-colsam-accent font-black text-lg leading-none">${g.goles}</span>
-                            <span class="text-[9px] text-colsam-light">GOLES</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // --- ADMINISTRACIÓN ---
-        function handleCreateEditor(e) {
-            e.preventDefault();
-            const doc = document.getElementById('ed-doc').value;
-            const nom = document.getElementById('ed-name').value;
-            const email = document.getElementById('ed-email').value;
-            const pass = document.getElementById('ed-pass').value;
-
-            if (typeof google !== 'undefined' && google.script) {
-                google.script.run.withSuccessHandler(res => {
-                    alert("Editor registrado con éxito.");
-                    e.target.reset();
-                }).crearEditor({doc, nom, email, pass});
-            }
-        }
-    </script>
+      } catch (err) {
+        console.error('Error durante la inicialización:', err);
+      }
+    });
+  </script>
 </body>
 </html>
