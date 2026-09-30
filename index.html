@@ -4,37 +4,33 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Colsam Sport - Partidos Intercurso</title>
+  <title>Colsam-Sport - Juegos Intercursos Oficiales</title>
   <!-- Google Fonts & FontAwesome Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
     /* ==========================================
-       VARIABLES Y ESTILOS GLOBALES
+       VARIABLES Y ESTILOS GLOBALES (IMAGEN 2)
        ========================================== */
     :root {
-      --primary: #1e3a8a;       /* Azul Institucional */
-      --primary-dark: #0f172a;  /* Oscuro */
-      --accent: #10b981;        /* Verde Deportivo */
-      --accent-hover: #059669;
-      --live-red: #ef4444;      /* Rojo En Vivo */
-      --warning: #f59e0b;       /* Amarillo Tarjeta/Alerta */
-      --bg-main: #f8fafc;
-      --bg-card: #ffffff;
+      --header-bg: #0d2847;       /* Azul marino profundo de la Imagen 2 */
+      --header-card-bg: #1a3a5f;
+      --bg-main: #f4f6f8;         /* Fondo gris muy claro */
+      --card-bg: #ffffff;
       --text-main: #1e293b;
       --text-muted: #64748b;
       --border-color: #e2e8f0;
-      --sidebar-width: 250px;
-      --header-height: 64px;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-      --transition: all 0.25s ease;
+      --score-bg: #f1f5f9;        /* Fondo caja marcador */
+      --accent-blue: #0d2847;
+      --badge-finalizado: #e8dfd5;
+      --badge-finalizado-text: #524336;
+      --radius-pill: 30px;
+      --radius-card: 14px;
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.04);
+      --transition: all 0.2s ease;
     }
 
     * {
@@ -47,9 +43,9 @@
     body {
       background-color: var(--bg-main);
       color: var(--text-main);
-      display: flex;
       min-height: 100vh;
-      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ==========================================
@@ -58,7 +54,7 @@
     .login-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      background: linear-gradient(135deg, #07172b 0%, var(--header-bg) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -68,11 +64,11 @@
 
     .login-card {
       background: #ffffff;
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-card);
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       padding: 2.5rem 2rem;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
       text-align: center;
     }
 
@@ -80,26 +76,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.75rem;
-      font-size: 1.8rem;
+      gap: 0.6rem;
+      font-size: 1.6rem;
       font-weight: 800;
-      color: var(--primary-dark);
-      margin-bottom: 0.5rem;
+      color: var(--header-bg);
+      margin-bottom: 0.25rem;
     }
 
-    .brand-login i {
-      color: var(--accent);
-    }
-
-    .login-subtitle {
+    .brand-login-sub {
+      font-size: 0.75rem;
+      font-weight: 700;
       color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 2rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
     }
 
     .form-group {
       text-align: left;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.2rem;
     }
 
     .form-group label {
@@ -114,7 +109,7 @@
       width: 100%;
       padding: 0.75rem 1rem;
       border: 1.5px solid var(--border-color);
-      border-radius: var(--radius-sm);
+      border-radius: 8px;
       font-size: 0.95rem;
       transition: var(--transition);
       background: #f8fafc;
@@ -122,498 +117,344 @@
 
     .form-input:focus {
       outline: none;
-      border-color: var(--primary);
+      border-color: var(--header-bg);
       background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+      box-shadow: 0 0 0 3px rgba(13, 40, 71, 0.1);
     }
 
-    .btn-block {
+    .btn-login {
       width: 100%;
-      justify-content: center;
+      background: var(--header-bg);
+      color: #fff;
       padding: 0.85rem;
-      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
       margin-top: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .btn-login:hover {
+      background: #173b66;
     }
 
     .login-error-msg {
       background: #fee2e2;
-      color: var(--live-red);
-      padding: 0.625rem;
-      border-radius: var(--radius-sm);
+      color: #dc2626;
+      padding: 0.6rem;
+      border-radius: 6px;
       font-size: 0.85rem;
       margin-bottom: 1rem;
       font-weight: 600;
     }
 
     /* ==========================================
-       LAYOUT SPA (Header & Sidebar)
+       CABEZAL PRINCIPAL (ESTILO IMAGEN 2)
        ========================================== */
-    #sidebar {
-      width: var(--sidebar-width);
-      background: var(--primary-dark);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 100;
-      transition: var(--transition);
-    }
-
-    .brand {
-      height: var(--header-height);
-      display: flex;
-      align-items: center;
-      padding: 0 1.5rem;
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: rgba(255, 255, 255, 0.05);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .brand i {
-      color: var(--accent);
-      margin-right: 0.75rem;
-      font-size: 1.4rem;
-    }
-
-    .nav-menu {
-      list-style: none;
-      padding: 1rem 0.75rem;
-      flex: 1;
-      overflow-y: auto;
-    }
-
-    .nav-item {
-      margin-bottom: 0.25rem;
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem 1rem;
-      color: #94a3b8;
-      text-decoration: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.925rem;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-
-    .nav-link i {
-      width: 24px;
-      margin-right: 0.75rem;
-      font-size: 1.1rem;
-    }
-
-    .nav-link:hover, .nav-link.active {
+    .top-header {
+      background-color: var(--header-bg);
       color: #ffffff;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-link.active {
-      background: var(--primary);
-      color: #ffffff;
-      font-weight: 600;
-    }
-
-    .user-profile-summary {
-      padding: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1.25rem 3rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    .user-profile-details {
+    .header-brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      overflow: hidden;
+      gap: 1rem;
     }
 
-    .avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .header-brand i {
+      font-size: 2rem;
+      color: #ffffff;
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
       font-weight: 700;
-      font-size: 0.9rem;
-      flex-shrink: 0;
+      color: #94a3b8;
+      letter-spacing: 1px;
     }
 
-    .user-info {
-      overflow: hidden;
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
 
-    .user-name {
-      font-size: 0.875rem;
+    .season-badge {
+      background: var(--header-card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
       font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .user-role-badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-      color: #cbd5e1;
-      text-transform: uppercase;
-      font-weight: 700;
+    .user-pill {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .btn-logout {
       background: none;
       border: none;
-      color: #94a3b8;
+      color: #cbd5e1;
       cursor: pointer;
-      font-size: 1.1rem;
-      padding: 0.4rem;
+      font-size: 1rem;
+      margin-left: 0.5rem;
       transition: var(--transition);
     }
 
     .btn-logout:hover {
-      color: var(--live-red);
-    }
-
-    #main-wrapper {
-      margin-left: var(--sidebar-width);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      transition: var(--transition);
-    }
-
-    header {
-      height: var(--header-height);
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 90;
-    }
-
-    .page-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-    }
-
-    .mobile-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.25rem;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    main#app-view {
-      padding: 2rem;
-      flex: 1;
+      color: #ef4444;
     }
 
     /* ==========================================
-       COMPONENTES Y UTILIDADES UI
+       CONTENEDOR Y FILTROS TIPO PÍLDORA
        ========================================== */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 1.5rem;
+    .main-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      flex: 1;
     }
 
-    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
-    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-
-    .stat-card {
+    .filter-pills {
       display: flex;
-      align-items: center;
-      gap: 1.25rem;
-    }
-
-    .stat-icon {
-      width: 50px;
-      height: 50px;
-      border-radius: var(--radius-sm);
-      background: #eff6ff;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
     }
 
-    .stat-value { font-size: 1.5rem; font-weight: 800; }
-    .stat-label { font-size: 0.85rem; color: var(--text-muted); }
-
-    .badge {
+    .pill-btn {
+      background: #ffffff;
+      border: 1.5px solid #d1d5db;
+      color: #374151;
+      padding: 0.55rem 1.4rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .badge-live { background: #fee2e2; color: var(--live-red); }
-    .badge-live .dot {
-      width: 8px;
-      height: 8px;
-      background: var(--live-red);
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-
-    .badge-scheduled { background: #e0f2fe; color: #0284c7; }
-    .badge-finished { background: #f1f5f9; color: #475569; }
-
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    /* Pestañas de Filtro */
-    .filter-tabs {
-      display: flex;
       gap: 0.5rem;
-      border-bottom: 2px solid var(--border-color);
-      margin-bottom: 1.5rem;
-      overflow-x: auto;
-    }
-
-    .tab-btn {
-      padding: 0.75rem 1.25rem;
-      border: none;
-      background: none;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      white-space: nowrap;
       transition: var(--transition);
     }
 
-    .tab-btn.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
+    .pill-btn:hover {
+      border-color: var(--header-bg);
+      color: var(--header-bg);
     }
 
-    /* Tarjetas de Partido */
+    .pill-btn.active {
+      background: var(--header-bg);
+      color: #ffffff;
+      border-color: var(--header-bg);
+    }
+
+    /* ==========================================
+       GRILLA DE TARJETAS DE PARTIDO (IMAGEN 2)
+       ========================================== */
+    .matches-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
     .match-card {
-      background: var(--bg-card);
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
       padding: 1.25rem;
       box-shadow: var(--shadow-sm);
-      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       transition: var(--transition);
-      position: relative;
     }
 
     .match-card:hover {
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
       transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: #cbd5e1;
     }
 
-    .match-header {
+    .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-
-    .match-teams {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 1rem 0;
-    }
-
-    .team {
-      flex: 1;
-      text-align: center;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .score-box {
-      background: var(--primary-dark);
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
-      font-weight: 800;
-      font-size: 1.25rem;
-      min-width: 70px;
-      text-align: center;
-      margin: 0 1rem;
-    }
-
-    .match-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-color);
-      padding-top: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    /* Botones y Formulario */
-    .btn {
-      padding: 0.625rem 1.25rem;
-      border-radius: var(--radius-sm);
-      border: none;
+      margin-bottom: 1.25rem;
       font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: var(--transition);
-      text-decoration: none;
     }
 
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .btn-accent { background: var(--accent); color: #fff; }
-    .btn-accent:hover { background: var(--accent-hover); }
-    .btn-danger { background: var(--live-red); color: #fff; }
-    .btn-outline { border: 1px solid var(--border-color); background: transparent; color: var(--text-main); }
-    .btn-outline:hover { background: #f1f5f9; }
-
-    .input-code {
-      font-family: monospace;
-      font-size: 1.5rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      text-align: center;
-      padding: 0.75rem;
-      border: 2px solid var(--border-color);
-      border-radius: var(--radius-md);
-      width: 100%;
-      max-width: 320px;
-      margin-bottom: 1rem;
-    }
-
-    .input-code:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    /* Consola Operativa del Editor */
-    .live-console {
-      background: #0f172a;
-      color: #fff;
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .live-score-big {
-      font-size: 3.5rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      margin: 1rem 0;
-      color: #38bdf8;
-    }
-
-    .quick-actions {
+    .card-sport {
       display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1.5rem;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--header-bg);
+      font-weight: 700;
     }
 
-    /* Event Timeline */
-    .timeline {
-      list-style: none;
-      position: relative;
-      padding-left: 1.5rem;
-    }
-
-    .timeline::before {
-      content: '';
-      position: absolute;
-      left: 7px;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--border-color);
-    }
-
-    .timeline-item {
+    /* Sección de Equipos y Marcadores */
+    .teams-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
       position: relative;
       margin-bottom: 1.25rem;
     }
 
-    .timeline-icon {
-      position: absolute;
-      left: -1.5rem;
-      top: 0;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--primary);
-      border: 2px solid #fff;
+    .team-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* States & Feedback */
-    .spinner {
-      border: 3px solid rgba(0,0,0,0.1);
+    .team-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .score-box {
+      background: var(--score-bg);
+      color: #0f172a;
+      font-size: 1.1rem;
+      font-weight: 800;
       width: 36px;
       height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vs-divider {
+      text-align: center;
+      position: relative;
+      margin: -0.25rem 0;
+    }
+
+    .vs-divider::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 50%; right: 0;
+      border-top: 1px solid var(--border-color);
+      z-index: 1;
+    }
+
+    .vs-text {
+      position: relative;
+      background: var(--card-bg);
+      padding: 0 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+      z-index: 2;
+    }
+
+    /* Footer de la Tarjeta */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.75rem;
+    }
+
+    .badge-status {
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .status-finalizado {
+      background: var(--badge-finalizado);
+      color: var(--badge-finalizado-text);
+    }
+
+    .status-proximo {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .status-encurso {
+      background: var(--header-bg);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .status-encurso .dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
       border-radius: 50%;
-      border-left-color: var(--primary);
-      animation: spin 1s linear infinite;
-      margin: 3rem auto;
     }
 
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      background: var(--primary-dark);
-      color: #fff;
-      padding: 1rem 1.5rem;
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-md);
-      z-index: 1000;
-      display: none;
-      animation: slideUp 0.3s ease;
+    .btn-details {
+      background: none;
+      border: none;
+      color: var(--header-bg);
+      font-size: 0.825rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
     }
 
-    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .btn-details:hover {
+      text-decoration: underline;
+    }
+
+    /* Controles de Editor */
+    .editor-controls {
+      background: var(--header-bg);
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-action {
+      background: #22c55e;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+    }
 
     /* Modal */
     .modal-overlay {
@@ -634,42 +475,42 @@
     .modal-card {
       background: #fff;
       width: 100%;
-      max-width: 500px;
-      border-radius: var(--radius-md);
+      max-width: 450px;
+      border-radius: var(--radius-card);
       padding: 1.5rem;
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
     }
 
     /* Responsividad */
-    @media (max-width: 768px) {
-      #sidebar { transform: translateX(-100%); }
-      #sidebar.open { transform: translateX(0); }
-      #main-wrapper { margin-left: 0; }
-      .mobile-toggle { display: block; }
-      main#app-view { padding: 1rem; }
+    @media (max-width: 900px) {
+      .matches-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .matches-grid { grid-template-columns: 1fr; }
+      .top-header { flex-direction: column; gap: 1rem; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA DE INICIO DE SESIÓN / INGRESO -->
+  <!-- PANTALLA DE INICIO / LOGIN -->
   <div id="login-screen" class="login-overlay">
     <div class="login-card">
       <div class="brand-login">
         <i class="fa-solid fa-trophy"></i>
-        <span>Colsam Sport</span>
+        <span>Colsam-Sport</span>
       </div>
-      <p class="login-subtitle">Ingreso a la plataforma de partidos intercurso</p>
+      <div class="brand-login-sub">Juegos Intercursos Oficiales</div>
 
       <form id="login-form" onsubmit="Auth.handleLogin(event)">
         <div class="form-group">
           <label for="login-name">Nombre y Apellido</label>
-          <input type="text" id="login-name" class="form-input" placeholder="Ej. Carlos Pérez" required>
+          <input type="text" id="login-name" class="form-input" placeholder="Ej. Juan Pérez" required>
         </div>
 
         <div class="form-group">
           <label for="login-curso">Curso / Grado</label>
-          <input type="text" id="login-curso" class="form-input" placeholder="Ej. 10A" required>
+          <input type="text" id="login-curso" class="form-input" placeholder="Ej. 11° A" required>
         </div>
 
         <div class="form-group">
@@ -677,7 +518,6 @@
           <select id="login-role" class="form-input" onchange="Auth.togglePasswordInput(this.value)">
             <option value="JUGADOR">Espectador / Jugador (Sin Clave)</option>
             <option value="EDITOR">Editor Deportivo (Requiere Clave)</option>
-            <option value="ADMINISTRADOR">Administrador (Requiere Clave)</option>
           </select>
         </div>
 
@@ -688,142 +528,145 @@
 
         <div id="login-error" class="login-error-msg" style="display: none;"></div>
 
-        <button type="submit" class="btn btn-accent btn-block">
-          <i class="fa-solid fa-right-to-bracket"></i> Ingresar
+        <button type="submit" class="btn-login">
+          <i class="fa-solid fa-right-to-bracket"></i> Ingresar a la Plataforma
         </button>
       </form>
     </div>
   </div>
 
-  <!-- SIDEBAR NAVIGATION -->
-  <aside id="sidebar">
-    <div class="brand">
+  <!-- CABEZAL SUPERIOR TIPO IMAGEN 2 -->
+  <header class="top-header">
+    <div class="header-brand">
       <i class="fa-solid fa-trophy"></i>
-      <span>Colsam Sport</span>
-    </div>
-    <ul class="nav-menu" id="nav-menu">
-      <!-- Carga dinámica según rol -->
-    </ul>
-    <div class="user-profile-summary">
-      <div class="user-profile-details">
-        <div class="avatar" id="user-avatar">U</div>
-        <div class="user-info">
-          <div class="user-name" id="user-name">Cargando...</div>
-          <span class="user-role-badge" id="user-role">...</span>
-        </div>
+      <div>
+        <div class="brand-title">Colsam-Sport</div>
+        <div class="brand-subtitle">JUEGOS INTERCURSOS OFICIALES</div>
       </div>
-      <button class="btn-logout" onclick="Auth.logout()" title="Cerrar sesión">
-        <i class="fa-solid fa-right-from-bracket"></i>
+    </div>
+    <div class="header-actions">
+      <div class="season-badge">
+        <i class="fa-regular fa-calendar"></i>
+        <span>Temporada 2026</span>
+      </div>
+      <div class="user-pill" id="user-pill" style="display: none;">
+        <span id="user-display-name">...</span>
+        <button class="btn-logout" onclick="Auth.logout()" title="Cerrar Sesión">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-container">
+    
+    <!-- Panel Especial para Editor Logueado -->
+    <div id="editor-banner" class="editor-controls" style="display: none;">
+      <div>
+        <i class="fa-solid fa-user-gear"></i> <strong>Modo Editor Activo</strong> — Tienes permisos para actualizar marcadores.
+      </div>
+      <button class="btn-action" onclick="UI.openModal()"><i class="fa-solid fa-plus"></i> Registrar Resultado</button>
+    </div>
+
+    <!-- Filtros de Deporte tipo Píldora (Imagen 2) -->
+    <div class="filter-pills">
+      <button class="pill-btn active" onclick="App.filterMatches('TODOS', this)">
+        <i class="fa-solid fa-border-all"></i> Todos
+      </button>
+      <button class="pill-btn" onclick="App.filterMatches('Futsal', this)">
+        <i class="fa-solid fa-futbol"></i> Futsal
+      </button>
+      <button class="pill-btn" onclick="App.filterMatches('Balonmano', this)">
+        <i class="fa-solid fa-hand"></i> Balonmano
+      </button>
+      <button class="pill-btn" onclick="App.filterMatches('Voleibol', this)">
+        <i class="fa-solid fa-volleyball"></i> Voleibol
       </button>
     </div>
-  </aside>
 
-  <!-- MAIN CONTAINER -->
-  <div id="main-wrapper">
-    <header>
-      <div style="display: flex; align-items: center; gap: 1rem;">
-        <button class="mobile-toggle" id="mobile-toggle" aria-label="Abrir menú">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-        <h1 class="page-title" id="page-title">Dashboard</h1>
-      </div>
-      <div>
-        <span id="current-time" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;"></span>
-      </div>
-    </header>
+    <!-- Grilla de Tarjetas -->
+    <div class="matches-grid" id="matches-grid">
+      <!-- Carga dinámica de partidos -->
+    </div>
+  </main>
 
-    <!-- SPA VIEW INJECTION CONTAINER -->
-    <main id="app-view">
-      <div class="spinner"></div>
-    </main>
-  </div>
-
-  <!-- TOAST NOTIFICATIONS -->
-  <div id="toast" class="toast"></div>
-
-  <!-- MODAL DE EVENTO RÁPIDO (EDITOR) -->
-  <div id="event-modal" class="modal-overlay">
+  <!-- MODAL DE REGISTRO PARA EDITORES -->
+  <div id="editor-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3 style="margin-bottom: 1rem;" id="modal-title">Registrar Evento</h3>
-      <form id="event-form">
-        <input type="hidden" id="event-match-id">
-        <div style="margin-bottom: 1rem;">
-          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Tipo de Evento</label>
-          <select id="event-type" class="btn btn-outline" style="width: 100%; justify-content: space-between;">
-            <option value="GOL">⚽ Gol / Anotación</option>
-            <option value="TARJETA_AMARILLA">🟨 Tarjeta Amarilla</option>
-            <option value="TARJETA_ROJA">🟥 Tarjeta Roja</option>
-            <option value="SUSTITUCION">🔄 Sustitución</option>
+      <h3 style="margin-bottom: 1rem; color: var(--header-bg);">Registrar / Editar Partido</h3>
+      <form id="match-form" onsubmit="App.saveMatch(event)">
+        <div class="form-group">
+          <label>Deporte</label>
+          <select id="modal-sport" class="form-input">
+            <option value="Futsal">Futsal</option>
+            <option value="Balonmano">Balonmano</option>
+            <option value="Voleibol">Voleibol</option>
           </select>
         </div>
-        <div style="margin-bottom: 1rem;">
-          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Equipo</label>
-          <select id="event-team" class="btn btn-outline" style="width: 100%;"></select>
+        <div style="display: flex; gap: 0.5rem;">
+          <div class="form-group" style="flex: 1;">
+            <label>Equipo 1</label>
+            <input type="text" id="modal-team1" class="form-input" placeholder="Ej. 11° A" required>
+          </div>
+          <div class="form-group" style="width: 70px;">
+            <label>Goles</label>
+            <input type="number" id="modal-score1" class="form-input" value="0" min="0">
+          </div>
         </div>
-        <div style="margin-bottom: 1rem;">
-          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Jugador</label>
-          <input type="text" id="event-player-id" placeholder="Nombre o # del jugador" class="btn btn-outline" style="width: 100%; text-align: left;">
+        <div style="display: flex; gap: 0.5rem;">
+          <div class="form-group" style="flex: 1;">
+            <label>Equipo 2</label>
+            <input type="text" id="modal-team2" class="form-input" placeholder="Ej. 11° B" required>
+          </div>
+          <div class="form-group" style="width: 70px;">
+            <label>Goles</label>
+            <input type="number" id="modal-score2" class="form-input" value="0" min="0">
+          </div>
         </div>
-        <div style="margin-bottom: 1.5rem;">
-          <label style="display:block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Minuto</label>
-          <input type="number" id="event-minute" value="1" min="1" max="120" class="btn btn-outline" style="width: 100%; text-align: left;">
+        <div class="form-group">
+          <label>Estado</label>
+          <select id="modal-status" class="form-input">
+            <option value="Finalizado">Finalizado</option>
+            <option value="En curso">En curso</option>
+            <option value="Próximo">Próximo</option>
+          </select>
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-          <button type="button" class="btn btn-outline" onclick="UI.closeModal()">Cancelar</button>
-          <button type="submit" class="btn btn-accent">Guardar Evento</button>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+          <button type="button" class="pill-btn" onclick="UI.closeModal()">Cancelar</button>
+          <button type="submit" class="btn-login" style="width: auto; padding: 0.55rem 1.2rem;">Guardar Partido</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC (SPA, AUTH, ROUTER, API CLIENT) -->
   <script>
     /**
-     * ==========================================
-     * ESTADO GLOBAL Y CONFIGURACIÓN
-     * ==========================================
+     * DATOS INICIALES Y ESTADO
      */
-    const State = {
-      currentUser: null,
-      matches: [],
-      currentMatch: null,
-      pollInterval: null,
-      currentFilter: 'TODOS'
-    };
+    const EDITOR_PASSWORD = 'colsam123';
 
-    // Mapeo de navegación por Rol
-    const NAV_ITEMS = {
-      ADMINISTRADOR: [
-        { route: '#/dashboard', icon: 'fa-chart-pie', label: 'Dashboard' },
-        { route: '#/partidos', icon: 'fa-calendar-days', label: 'Partidos' },
-        { route: '#/deportes', icon: 'fa-volleyball', label: 'Deportes' },
-        { route: '#/torneos', icon: 'fa-trophy', label: 'Torneos' },
-        { route: '#/usuarios', icon: 'fa-users-gear', label: 'Usuarios' },
-        { route: '#/auditoria', icon: 'fa-shield-halved', label: 'Auditoría' }
-      ],
-      EDITOR: [
-        { route: '#/dashboard', icon: 'fa-chart-pie', label: 'Mis Partidos' },
-        { route: '#/partidos', icon: 'fa-calendar-days', label: 'Todos los Partidos' }
-      ],
-      JUGADOR: [
-        { route: '#/dashboard', icon: 'fa-house', label: 'Mi Panel' },
-        { route: '#/inscribir', icon: 'fa-key', label: 'Ingresar Código' },
-        { route: '#/partidos', icon: 'fa-calendar-days', label: 'Partidos' }
+    let state = {
+      user: null,
+      currentFilter: 'TODOS',
+      matches: [
+        { id: 1, sport: 'Futsal', icon: 'fa-futbol', date: '25 May, 08:00 AM', team1: '11° A', score1: '4', team2: '11° B', score2: '2', status: 'Finalizado' },
+        { id: 2, sport: 'Futsal', icon: 'fa-futbol', date: '25 May, 09:30 AM', team1: '10° C', score1: '1', team2: '10° A', score2: '1', status: 'Finalizado' },
+        { id: 3, sport: 'Balonmano', icon: 'fa-hand', date: '26 May, 08:00 AM', team1: '9° B', score1: '15', team2: '9° C', score2: '12', status: 'Finalizado' },
+        { id: 4, sport: 'Voleibol', icon: 'fa-volleyball', date: '27 May, 10:00 AM', team1: '11° C', score1: '2', team2: '10° B', score2: '0', status: 'Finalizado' },
+        { id: 5, sport: 'Futsal', icon: 'fa-futbol', date: 'Hoy, 14:00 PM', team1: '8° A', score1: '-', team2: '8° B', score2: '-', status: 'Próximo' },
+        { id: 6, sport: 'Balonmano', icon: 'fa-hand', date: 'Hoy, En curso', team1: '11° A', score1: '8', team2: '10° C', score2: '5', status: 'En curso' }
       ]
     };
 
     /**
-     * ==========================================
-     * MÓDULO DE AUTENTICACIÓN Y CONTROL DE ACCESO
-     * ==========================================
+     * AUTENTICACIÓN
      */
     const Auth = {
-      EDITOR_PASSWORD: 'colsam123',
-
       togglePasswordInput: function(role) {
         const passGroup = document.getElementById('password-group');
         const passInput = document.getElementById('login-password');
-        if (role === 'EDITOR' || role === 'ADMINISTRADOR') {
+        if (role === 'EDITOR') {
           passGroup.style.display = 'block';
           passInput.required = true;
         } else {
@@ -843,497 +686,149 @@
 
         errorDiv.style.display = 'none';
 
-        // Validación de Contraseña para Editores/Administradores
-        if ((role === 'EDITOR' || role === 'ADMINISTRADOR') && password !== this.EDITOR_PASSWORD) {
+        if (role === 'EDITOR' && password !== EDITOR_PASSWORD) {
           errorDiv.textContent = 'Contraseña incorrecta para Editor. Verifícala e intenta de nuevo.';
           errorDiv.style.display = 'block';
           return;
         }
 
-        const user = {
-          nombre: name,
-          curso: curso,
-          rol: role,
-          email: `${name.toLowerCase().replace(/\s+/g, '.')}@colegio.edu.co`
-        };
-
-        // Guardar sesión localmente
-        localStorage.setItem('colsam_user', JSON.stringify(user));
-        State.currentUser = user;
-        Auth.initAppWithUser();
+        state.user = { name, curso, role };
+        localStorage.setItem('colsam_user_session', JSON.stringify(state.user));
+        
+        Auth.initApp();
       },
 
       logout: function() {
-        localStorage.removeItem('colsam_user');
-        State.currentUser = null;
+        localStorage.removeItem('colsam_user_session');
+        state.user = null;
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('login-form').reset();
         Auth.togglePasswordInput('JUGADOR');
+        document.getElementById('user-pill').style.display = 'none';
+        document.getElementById('editor-banner').style.display = 'none';
       },
 
-      initAppWithUser: function() {
+      initApp: function() {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('user-name').textContent = State.currentUser.nombre;
-        document.getElementById('user-role').textContent = `${State.currentUser.rol} (${State.currentUser.curso})`;
-        document.getElementById('user-avatar').textContent = State.currentUser.nombre.charAt(0).toUpperCase();
+        document.getElementById('user-pill').style.display = 'flex';
+        document.getElementById('user-display-name').textContent = `${state.user.name} (${state.user.curso})`;
 
-        UI.renderSidebarNav(State.currentUser.rol);
-        Router.init();
-      }
-    };
-
-    /**
-     * ==========================================
-     * CLIENTE DE API BACKEND (GAS WRAPPER)
-     * ==========================================
-     */
-    const API = {
-      call: function(serverFunction, ...args) {
-        return new Promise((resolve, reject) => {
-          if (typeof google !== 'undefined' && google.script && google.script.run) {
-            google.script.run
-              .withSuccessHandler(response => resolve(response))
-              .withFailureHandler(err => reject(err))[serverFunction](...args);
-          } else {
-            // Mock local para pruebas en desarrollo visual
-            setTimeout(() => resolve(API._getMockResponse(serverFunction, args)), 300);
-          }
-        });
-      },
-
-      _getMockResponse: function(fn, args) {
-        if (fn === 'getDashboard') {
-          return {
-            success: true,
-            data: { partidosHoy: 3, partidosEnVivo: 1, finalizados: 8, totalJugadores: 140 }
-          };
-        }
-        if (fn === 'getMatches') {
-          return {
-            success: true,
-            data: [
-              { id: 'M1', codigo: 'FUT-8K4P2', deporte: 'Fútbol', torneo: 'Intercurso 10-11', local: '10A', visitante: '11B', marcadorLocal: 2, marcadorVisitante: 1, estado: 'EN_VIVO', fecha: 'Hoy', hora: '10:00 AM', escenario: 'Cancha Principal', minuto: "42'" },
-              { id: 'M2', codigo: 'BAL-7H9XQ', deporte: 'Baloncesto', torneo: 'Intercurso 8-9', local: '8B', visitante: '9A', marcadorLocal: 0, marcadorVisitante: 0, estado: 'PROGRAMADO', fecha: 'Hoy', hora: '11:30 AM', escenario: 'Coliseo' },
-              { id: 'M3', codigo: 'VOL-3M7RT', deporte: 'Voleibol', torneo: 'Intercurso Femenino', local: '10B', visitante: '11A', marcadorLocal: 2, marcadorVisitante: 0, estado: 'FINALIZADO', fecha: 'Ayer', hora: '02:00 PM', escenario: 'Cancha 2' }
-            ]
-          };
-        }
-        return { success: true, data: {} };
-      }
-    };
-
-    /**
-     * ==========================================
-     * ENRUTADOR DE LA SPA
-     * ==========================================
-     */
-    const Router = {
-      init: function() {
-        window.onhashchange = () => this.route();
-        this.route();
-      },
-
-      route: function() {
-        if (!State.currentUser) return;
-
-        // Limpiar polling al cambiar de vista
-        if (State.pollInterval) {
-          clearInterval(State.pollInterval);
-          State.pollInterval = null;
-        }
-
-        const hash = window.location.hash || '#/dashboard';
-        const appView = document.getElementById('app-view');
-        
-        // Actualizar nav activa
-        document.querySelectorAll('.nav-link').forEach(link => {
-          link.classList.toggle('active', link.getAttribute('href') === hash);
-        });
-
-        // Parsear parámetros de la ruta (ej. #/partido/M1)
-        const matchDetailRoute = hash.match(/^#\/partido\/(.+)$/);
-
-        if (hash === '#/dashboard') {
-          Views.renderDashboard(appView);
-        } else if (hash === '#/partidos') {
-          Views.renderMatchesList(appView);
-        } else if (hash === '#/inscribir') {
-          Views.renderPlayerJoin(appView);
-        } else if (matchDetailRoute) {
-          Views.renderMatchDetail(appView, matchDetailRoute[1]);
+        if (state.user.role === 'EDITOR') {
+          document.getElementById('editor-banner').style.display = 'flex';
         } else {
-          appView.innerHTML = `
-            <div class="card" style="text-align: center; padding: 3rem;">
-              <h2>404 - Vista no encontrada</h2>
-              <p style="color: var(--text-muted); margin: 1rem 0;">La sección solicitada no existe o no tienes permisos.</p>
-              <a href="#/dashboard" class="btn btn-primary">Volver al Dashboard</a>
-            </div>
-          `;
+          document.getElementById('editor-banner').style.display = 'none';
         }
+
+        App.renderMatches();
       }
     };
 
     /**
-     * ==========================================
-     * COMPONENTES DE VISTAS (RENDERERS)
-     * ==========================================
+     * LÓGICA DE APLICACIÓN Y RENDERIZADO
      */
-    const Views = {
-      renderDashboard: async function(container) {
-        UI.setTitle('Dashboard General');
-        container.innerHTML = '<div class="spinner"></div>';
+    const App = {
+      renderMatches: function() {
+        const grid = document.getElementById('matches-grid');
+        const filtered = state.currentFilter === 'TODOS' 
+          ? state.matches 
+          : state.matches.filter(m => m.sport === state.currentFilter);
 
-        try {
-          const resDash = await API.call('getDashboard');
-          const resMatches = await API.call('getMatches');
-
-          if (!resDash.success) throw new Error(resDash.message);
-
-          const d = resDash.data;
-          const liveMatch = resMatches.data.find(m => m.estado === 'EN_VIVO');
-
-          container.innerHTML = `
-            <div class="grid-4" style="margin-bottom: 2rem;">
-              <div class="card stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-play"></i></div>
-                <div><div class="stat-value">${d.partidosEnVivo}</div><div class="stat-label">En Vivo Ahora</div></div>
+        grid.innerHTML = filtered.map(m => `
+          <div class="match-card">
+            <div>
+              <div class="card-header">
+                <div class="card-sport">
+                  <i class="fa-solid ${m.icon}"></i>
+                  <span>${m.sport}</span>
+                </div>
+                <span>${m.date}</span>
               </div>
-              <div class="card stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-calendar"></i></div>
-                <div><div class="stat-value">${d.partidosHoy}</div><div class="stat-label">Partidos Hoy</div></div>
-              </div>
-              <div class="card stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
-                <div><div class="stat-value">${d.finalizados}</div><div class="stat-label">Finalizados</div></div>
-              </div>
-              <div class="card stat-card">
-                <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
-                <div><div class="stat-value">${d.totalJugadores}</div><div class="stat-label">Jugadores Activos</div></div>
+
+              <div class="teams-container">
+                <div class="team-row">
+                  <span class="team-name">${m.team1}</span>
+                  <div class="score-box">${m.score1}</div>
+                </div>
+                <div class="vs-divider">
+                  <span class="vs-text">VS</span>
+                </div>
+                <div class="team-row">
+                  <span class="team-name">${m.team2}</span>
+                  <div class="score-box">${m.score2}</div>
+                </div>
               </div>
             </div>
 
-            ${State.currentUser.rol === 'JUGADOR' ? `
-              <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e3a8a, #0f172a); color: #fff;">
-                <h2 style="margin-bottom: 0.5rem;">¡Hola ${State.currentUser.nombre}! (${State.currentUser.curso})</h2>
-                <p style="color: #94a3b8; margin-bottom: 1.5rem;">Ingresa el código único del partido para unirte a la planilla oficial de juego.</p>
-                <a href="#/inscribir" class="btn btn-accent"><i class="fa-solid fa-key"></i> Ingresar Código de Partido</a>
-              </div>
-            ` : ''}
-
-            ${liveMatch ? `
-              <div class="card" style="border-left: 4px solid var(--live-red);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                  <span class="badge badge-live"><span class="dot"></span> DESTACADO EN VIVO</span>
-                  <span style="font-size: 0.85rem; color: var(--text-muted);">${liveMatch.deporte} —${liveMatch.torneo}</span>
-                </div>
-                <div class="match-teams">
-                  <div class="team">${liveMatch.local}</div>
-                  <div class="score-box">${liveMatch.marcadorLocal} -${liveMatch.marcadorVisitante}</div>
-                  <div class="team">${liveMatch.visitante}</div>
-                </div>
-                <div style="text-align: center; margin-top: 1rem;">
-                  <a href="#/partido/${liveMatch.id}" class="btn btn-primary btn-sm">Ver Partido / Control</a>
-                </div>
-              </div>
-            ` : ''}
-          `;
-        } catch (err) {
-          UI.showToast('Error al cargar datos del dashboard', 'error');
-        }
-      },
-
-      renderMatchesList: async function(container) {
-        UI.setTitle('Partidos Intercurso');
-        container.innerHTML = '<div class="spinner"></div>';
-
-        try {
-          const res = await API.call('getMatches');
-          if (!res.success) throw new Error(res.message);
-          State.matches = res.data;
-
-          container.innerHTML = `
-            <div class="filter-tabs">
-              <button class="tab-btn ${State.currentFilter === 'TODOS' ? 'active' : ''}" onclick="Views.filterMatches('TODOS')">Todos</button>
-              <button class="tab-btn ${State.currentFilter === 'EN_VIVO' ? 'active' : ''}" onclick="Views.filterMatches('EN_VIVO')">🔴 En Vivo</button>
-              <button class="tab-btn ${State.currentFilter === 'PROGRAMADO' ? 'active' : ''}" onclick="Views.filterMatches('PROGRAMADO')">Próximos</button>
-              <button class="tab-btn ${State.currentFilter === 'FINALIZADO' ? 'active' : ''}" onclick="Views.filterMatches('FINALIZADO')">Finalizados</button>
-            </div>
-            <div class="grid-2" id="matches-grid">
-              ${Views._buildMatchCardsHtml(State.matches)}
-            </div>
-          `;
-        } catch (err) {
-          UI.showToast('Error al obtener lista de partidos', 'error');
-        }
-      },
-
-      filterMatches: function(filter) {
-        State.currentFilter = filter;
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-
-        const filtered = filter === 'TODOS' 
-          ? State.matches 
-          : State.matches.filter(m => m.estado === filter);
-
-        document.getElementById('matches-grid').innerHTML = Views._buildMatchCardsHtml(filtered);
-      },
-
-      _buildMatchCardsHtml: function(matches) {
-        if (!matches || matches.length === 0) {
-          return `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 2rem;">No hay partidos disponibles en esta categoría.</div>`;
-        }
-
-        return matches.map(m => `
-          <div class="match-card" onclick="window.location.hash='#/partido/${m.id}'">
-            <div class="match-header">
-              <span><strong>${m.deporte}</strong> • ${m.torneo}</span>
-              ${m.estado === 'EN_VIVO' 
-                ? `<span class="badge badge-live"><span class="dot"></span> EN VIVO ${m.minuto || ''}</span>`
-                : m.estado === 'FINALIZADO' 
-                ? `<span class="badge badge-finished">FINALIZADO</span>`
-                : `<span class="badge badge-scheduled">PROGRAMADO</span>`
+            <div class="card-footer">
+              ${m.status === 'Finalizado' 
+                ? `<span class="badge-status status-finalizado">Finalizado</span>` 
+                : m.status === 'En curso'
+                ? `<span class="badge-status status-encurso"><span class="dot"></span> En curso</span>`
+                : `<span class="badge-status status-proximo">Próximo</span>`
               }
-            </div>
-            <div class="match-teams">
-              <div class="team">${m.local}</div>
-              <div class="score-box">${m.marcadorLocal} - ${m.marcadorVisitante}</div>
-              <div class="team">${m.visitante}</div>
-            </div>
-            <div class="match-footer">
-              <span><i class="fa-solid fa-location-dot"></i> ${m.escenario}</span>
-              <span><i class="fa-regular fa-clock"></i> ${m.hora} (${m.fecha})</span>
+              <a href="#" class="btn-details" onclick="alert('Detalles del encuentro ${m.team1} vs ${m.team2}'); return false;">Ver detalles</a>
             </div>
           </div>
         `).join('');
       },
 
-      renderPlayerJoin: function(container) {
-        UI.setTitle('Inscripción de Jugador');
-        container.innerHTML = `
-          <div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
-            <i class="fa-solid fa-qrcode" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
-            <h2>Ingresar Código de Partido</h2>
-            <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0; font-size: 0.9rem;">
-              Ingresa el código proporcionado por el editor o profesor (Ejemplo: FUT-8K4P2).
-            </p>
-            <form onsubmit="Views.handleJoinSubmit(event)">
-              <input type="text" id="match-code-input" class="input-code" placeholder="FUT-XXXXX" required maxlength="10">
-              <br>
-              <button type="submit" class="btn btn-accent" style="width: 100%; max-width: 320px; justify-content: center;">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i> Buscar Partido
-              </button>
-            </form>
-            <div id="join-result" style="margin-top: 1.5rem;"></div>
-          </div>
-        `;
+      filterMatches: function(sport, btnElement) {
+        state.currentFilter = sport;
+        document.querySelectorAll('.pill-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+        App.renderMatches();
       },
 
-      handleJoinSubmit: async function(e) {
+      saveMatch: function(e) {
         e.preventDefault();
-        const code = document.getElementById('match-code-input').value.trim().toUpperCase();
-        const resultDiv = document.getElementById('join-result');
-        resultDiv.innerHTML = '<div class="spinner"></div>';
+        const sport = document.getElementById('modal-sport').value;
+        const team1 = document.getElementById('modal-team1').value;
+        const score1 = document.getElementById('modal-score1').value;
+        const team2 = document.getElementById('modal-team2').value;
+        const score2 = document.getElementById('modal-score2').value;
+        const status = document.getElementById('modal-status').value;
 
-        try {
-          const res = await API.call('getMatches');
-          const match = res.data.find(m => m.codigo === code);
+        const iconMap = { 'Futsal': 'fa-futbol', 'Balonmano': 'fa-hand', 'Voleibol': 'fa-volleyball' };
 
-          if (match) {
-            resultDiv.innerHTML = `
-              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1rem; border-radius: var(--radius-sm); text-align: left;">
-                <h4 style="color: #166534;">Partido Encontrado</h4>
-                <p><strong>Deporte:</strong> ${match.deporte}</p>
-                <p><strong>Encuentro:</strong> ${match.local} vs ${match.visitante}</p>
-                <p><strong>Escenario:</strong> ${match.escenario} (${match.hora})</p>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="Views.confirmRegistration('${match.id}')">
-                  Confirmar Inscripción como ${State.currentUser.nombre} (${State.currentUser.curso})
-                </button>
-              </div>
-            `;
-          } else {
-            resultDiv.innerHTML = `<div style="color: var(--live-red); font-weight: 600;">Código no encontrado o no válido.</div>`;
-          }
-        } catch (err) {
-          resultDiv.innerHTML = `<div style="color: var(--live-red);">Error al validar código.</div>`;
-        }
-      },
+        state.matches.unshift({
+          id: Date.now(),
+          sport: sport,
+          icon: iconMap[sport] || 'fa-trophy',
+          date: 'Hoy',
+          team1: team1,
+          score1: score1,
+          team2: team2,
+          score2: score2,
+          status: status
+        });
 
-      confirmRegistration: async function(matchId) {
-        try {
-          UI.showToast(`¡Inscripción confirmada para ${State.currentUser.nombre}!`);
-          window.location.hash = `#/partido/${matchId}`;
-        } catch (err) {
-          UI.showToast('No se pudo completar el registro.', 'error');
-        }
-      },
-
-      renderMatchDetail: async function(container, matchId) {
-        container.innerHTML = '<div class="spinner"></div>';
-        
-        try {
-          const res = await API.call('getMatches');
-          const match = res.data.find(m => m.id === matchId);
-
-          if (!match) {
-            container.innerHTML = '<h2>Partido no encontrado</h2>';
-            return;
-          }
-
-          UI.setTitle(`Partido ${match.codigo}`);
-          const isEditor = State.currentUser.rol === 'ADMINISTRADOR' || State.currentUser.rol === 'EDITOR';
-
-          container.innerHTML = `
-            <div class="live-console">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="badge ${match.estado === 'EN_VIVO' ? 'badge-live' : 'badge-scheduled'}">
-                  ${match.estado === 'EN_VIVO' ? '<span class="dot"></span> EN VIVO' : match.estado}
-                </span>
-                <span style="font-size: 0.9rem; opacity: 0.8;">Código: <strong>${match.codigo}</strong></span>
-              </div>
-
-              <div class="match-teams" style="margin: 2rem 0;">
-                <div class="team" style="font-size: 1.5rem;">${match.local}</div>
-                <div class="live-score-big">${match.marcadorLocal} - ${match.marcadorVisitante}</div>
-                <div class="team" style="font-size: 1.5rem;">${match.visitante}</div>
-              </div>
-
-              <p style="font-size: 0.9rem; opacity: 0.8;">
-                <i class="fa-solid fa-location-dot"></i> ${match.escenario} | <i class="fa-regular fa-clock"></i> ${match.hora}
-              </p>
-
-              ${isEditor ? `
-                <div class="quick-actions">
-                  <button class="btn btn-accent" onclick="UI.openEventModal('${match.id}', '${match.local}', '${match.visitante}')">
-                    <i class="fa-solid fa-plus"></i> Registrar Evento
-                  </button>
-                  ${match.estado !== 'EN_VIVO' ? `
-                    <button class="btn btn-primary" onclick="Views.changeMatchState('${match.id}', 'INICIAR')">▶ Iniciar Partido</button>
-                  ` : `
-                    <button class="btn btn-danger" onclick="Views.changeMatchState('${match.id}', 'FINALIZAR')">⏹ Finalizar Partido</button>
-                  `}
-                </div>
-              ` : ''}
-            </div>
-
-            <div class="card">
-              <h3><i class="fa-solid fa-list-timeline"></i> Eventos del Partido</h3>
-              <ul class="timeline" style="margin-top: 1.5rem;">
-                <li class="timeline-item">
-                  <div class="timeline-icon"></div>
-                  <strong>42' ⚽ Gol — Juan Pérez</strong> (${match.local})
-                </li>
-                <li class="timeline-item">
-                  <div class="timeline-icon" style="background: var(--warning);"></div>
-                  <strong>28' 🟨 Tarjeta Amarilla — Carlos López</strong> (${match.visitante})
-                </li>
-              </ul>
-            </div>
-          `;
-
-          // Polling si el partido está en vivo
-          if (match.estado === 'EN_VIVO') {
-            State.pollInterval = setInterval(() => {
-              console.log('[POLLING] Actualizando estado en vivo...');
-            }, 10000);
-          }
-
-        } catch (err) {
-          UI.showToast('Error al cargar detalle del partido', 'error');
-        }
-      },
-
-      changeMatchState: function(matchId, action) {
-        UI.showToast(`Estado del partido cambiado: ${action}`);
-        Router.route();
-      }
-    };
-
-    /**
-     * ==========================================
-     * MANEJO DE INTERFAZ Y MODALES
-     * ==========================================
-     */
-    const UI = {
-      setTitle: function(title) {
-        document.getElementById('page-title').textContent = title;
-      },
-
-      showToast: function(msg, type = 'info') {
-        const t = document.getElementById('toast');
-        t.textContent = msg;
-        t.style.background = type === 'error' ? 'var(--live-red)' : 'var(--primary-dark)';
-        t.style.display = 'block';
-        setTimeout(() => { t.style.display = 'none'; }, 3500);
-      },
-
-      openEventModal: function(matchId, localTeam, visitanteTeam) {
-        document.getElementById('event-match-id').value = matchId;
-        const selectTeam = document.getElementById('event-team');
-        selectTeam.innerHTML = `
-          <option value="${localTeam}">${localTeam}</option>
-          <option value="${visitanteTeam}">${visitanteTeam}</option>
-        `;
-        document.getElementById('event-modal').classList.add('active');
-      },
-
-      closeModal: function() {
-        document.getElementById('event-modal').classList.remove('active');
-      },
-
-      renderSidebarNav: function(rol) {
-        const menuContainer = document.getElementById('nav-menu');
-        const items = NAV_ITEMS[rol] || NAV_ITEMS.JUGADOR;
-
-        menuContainer.innerHTML = items.map(item => `
-          <li class="nav-item">
-            <a href="${item.route}" class="nav-link">
-              <i class="fa-solid ${item.icon}"></i>
-              <span>${item.label}</span>
-            </a>
-          </li>
-        `).join('');
-      },
-
-      updateClock: function() {
-        const now = new Date();
-        const options = { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-        document.getElementById('current-time').textContent = `Bogotá: ${now.toLocaleTimeString('es-CO', options)}`;
-      }
-    };
-
-    /**
-     * ==========================================
-     * INICIALIZACIÓN DE LA APLICACIÓN
-     * ==========================================
-     */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Reloj institucional
-      UI.updateClock();
-      setInterval(UI.updateClock, 1000);
-
-      // Event Listeners UI
-      document.getElementById('mobile-toggle').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('open');
-      });
-
-      document.getElementById('event-form').addEventListener('submit', (e) => {
-        e.preventDefault();
         UI.closeModal();
-        UI.showToast('Evento registrado en vivo correctamente');
-      });
+        App.renderMatches();
+        document.getElementById('match-form').reset();
+      }
+    };
 
-      // Verificar si ya existe una sesión guardada
-      const savedUser = localStorage.getItem('colsam_user');
-      if (savedUser) {
+    const UI = {
+      openModal: function() {
+        document.getElementById('editor-modal').classList.add('active');
+      },
+      closeModal: function() {
+        document.getElementById('editor-modal').classList.remove('active');
+      }
+    };
+
+    // Inicialización al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedSession = localStorage.getItem('colsam_user_session');
+      if (savedSession) {
         try {
-          State.currentUser = JSON.parse(savedUser);
-          Auth.initAppWithUser();
+          state.user = JSON.parse(savedSession);
+          Auth.initApp();
         } catch (e) {
           Auth.logout();
         }
       } else {
-        document.getElementById('login-screen').style.display = 'flex';
+        App.renderMatches();
       }
     });
   </script>
