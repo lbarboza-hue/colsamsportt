@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colsam-Sport | Torneo Intercursos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración de Paleta de Colores Requerida -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        colsam: {
+                            dark: '#144659',      /* Fondo principal oscuro */
+                            primary: '#03658C',   /* Tarjetas y cabeceras */
+                            secondary: '#66CAF2', /* Botones y acentos principales */
+                            accent: '#9EE4FF',    /* Resaltados y hover */
+                            light: '#D1F2FF'      /* Textos secundarios y fondos suaves */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #144659; color: #ffffff; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #03658C; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #66CAF2; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col custom-scrollbar">
+
+    <!-- Navbar -->
+    <header class="bg-colsam-primary border-b border-colsam-secondary/30 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-1 rounded-lg">
+                    <img src="https://lh3.googleusercontent.com/d/13DKo3yKAQQ-yoxsIL7d7V540QR7hz11V" alt="Logo" class="w-32 h-8 object-contain" onerror="this.style.display='none';">
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight text-white leading-tight">COLSAM-SPORT</h1>
+                    <p class="text-[10px] text-colsam-accent font-bold uppercase tracking-widest leading-none">Intercursos</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Info de Usuario -->
+                <div id="userInfoHeader" class="hidden items-center gap-2 bg-colsam-dark px-3 py-1.5 rounded-xl border border-colsam-secondary/30 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-colsam-secondary animate-pulse"></span>
+                    <span id="userNameText" class="text-colsam-light font-semibold">Editor</span>
+                </div>
+                
+                <!-- Botón de Login/Logout -->
+                <button id="btnAuthAction" onclick="handleAuth()" class="bg-colsam-secondary hover:bg-colsam-accent text-colsam-dark font-bold text-xs px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-md">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    <span id="btnAuthText">Ingresar</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 flex flex-col gap-6">
+        
+        <!-- Pestañas de Navegación -->
+        <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+            <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2.5 text-sm font-bold bg-colsam-secondary text-colsam-dark rounded-xl transition whitespace-nowrap flex items-center gap-2 shadow">
+                <i data-lucide="calendar" class="w-4 h-4"></i> Partidos
+            </button>
+            <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="tab-btn px-4 py-2.5 text-sm font-bold bg-colsam-primary text-colsam-light hover:bg-colsam-secondary hover:text-colsam-dark rounded-xl transition whitespace-nowrap flex items-center gap-2">
+                <i data-lucide="list-ordered" class="w-4 h-4"></i> Posiciones
+            </button>
+            <button onclick="switchTab('scorers')" id="tab-scorers" class="tab-btn px-4 py-2.5 text-sm font-bold bg-colsam-primary text-colsam-light hover:bg-colsam-secondary hover:text-colsam-dark rounded-xl transition whitespace-nowrap flex items-center gap-2">
+                <i data-lucide="award" class="w-4 h-4"></i> Goleadores
+            </button>
+            
+            <!-- Pestañas Privadas -->
+            <button onclick="switchTab('management')" id="tab-management" class="tab-btn hidden px-4 py-2.5 text-sm font-bold border border-colsam-secondary text-colsam-secondary hover:bg-colsam-secondary hover:text-colsam-dark rounded-xl transition whitespace-nowrap items-center gap-2">
+                <i data-lucide="settings-2" class="w-4 h-4"></i> Gestión Torneo
+            </button>
+            <button onclick="switchTab('admin')" id="tab-admin" class="tab-btn hidden px-4 py-2.5 text-sm font-bold border border-colsam-accent text-colsam-accent hover:bg-colsam-accent hover:text-colsam-dark rounded-xl transition whitespace-nowrap items-center gap-2">
+                <i data-lucide="shield" class="w-4 h-4"></i> Administradores
+            </button>
+        </div>
+
+        <!-- 1. VISTA: PARTIDOS -->
+        <div id="view-matches" class="tab-content flex flex-col gap-4">
+            <div class="flex justify-between items-center bg-colsam-primary p-4 rounded-2xl shadow-md">
+                <div class="flex gap-2">
+                    <button onclick="filterMatches('todos')" id="btn-m-todos" class="px-3 py-1.5 bg-colsam-secondary text-colsam-dark text-xs font-bold rounded-lg">Todos</button>
+                    <button onclick="filterMatches('Futsal')" id="btn-m-futsal" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Futsal</button>
+                    <button onclick="filterMatches('Balonmano')" id="btn-m-balonmano" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Balonm.</button>
+                    <button onclick="filterMatches('Voleibol')" id="btn-m-voleibol" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Volei</button>
+                </div>
+                <button id="btnNewMatch" onclick="openMatchModal()" class="hidden bg-colsam-accent hover:bg-colsam-secondary text-colsam-dark font-bold text-xs px-4 py-2 rounded-xl transition items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Programar
+                </button>
+            </div>
+            <div id="matches-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Generado por JS -->
+            </div>
+        </div>
+
+        <!-- 2. VISTA: POSICIONES -->
+        <div id="view-leaderboard" class="tab-content hidden flex flex-col gap-4">
+            <div class="bg-colsam-primary p-4 rounded-2xl flex gap-2">
+                <button onclick="filterLeaderboard('Futsal')" id="btn-l-futsal" class="px-3 py-1.5 bg-colsam-secondary text-colsam-dark text-xs font-bold rounded-lg">Futsal</button>
+                <button onclick="filterLeaderboard('Balonmano')" id="btn-l-balonmano" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Balonmano</button>
+                <button onclick="filterLeaderboard('Voleibol')" id="btn-l-voleibol" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Voleibol</button>
+            </div>
+            <div class="bg-colsam-primary rounded-2xl overflow-hidden shadow-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-colsam-dark text-colsam-secondary font-bold text-xs uppercase">
+                            <tr>
+                                <th class="p-4 text-center">Pos</th>
+                                <th class="p-4">Salón</th>
+                                <th class="p-3 text-center">PJ</th>
+                                <th class="p-3 text-center">PG</th>
+                                <th class="p-3 text-center">PE</th>
+                                <th class="p-3 text-center">PP</th>
+                                <th class="p-4 text-right text-colsam-accent">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="divide-y divide-colsam-dark/50">
+                            <!-- JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. VISTA: GOLEADORES -->
+        <div id="view-scorers" class="tab-content hidden flex flex-col gap-4">
+            <div class="bg-colsam-primary p-4 rounded-2xl flex gap-2">
+                <button onclick="filterScorers('Futsal')" id="btn-s-futsal" class="px-3 py-1.5 bg-colsam-secondary text-colsam-dark text-xs font-bold rounded-lg">Futsal</button>
+                <button onclick="filterScorers('Balonmano')" id="btn-s-balonmano" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Balonmano</button>
+                <button onclick="filterScorers('Voleibol')" id="btn-s-voleibol" class="px-3 py-1.5 bg-colsam-dark text-colsam-light text-xs font-bold rounded-lg">Voleibol</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="scorers-grid">
+                <!-- JS -->
+            </div>
+        </div>
+
+        <!-- 4. VISTA: GESTIÓN DE TORNEO (Salones y Jugadores) -->
+        <div id="view-management" class="tab-content hidden flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Crear Salón -->
+                <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl">
+                    <h3 class="font-bold text-colsam-accent mb-4 flex items-center gap-2"><i data-lucide="school" class="w-5 h-5"></i> Registrar Salón</h3>
+                    <form onsubmit="handleCreateSalon(event)" class="flex gap-2">
+                        <input type="text" id="salon-name" placeholder="Ej: 11A" required class="flex-grow bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30 focus:outline-none focus:border-colsam-secondary">
+                        <button type="submit" class="bg-colsam-secondary text-colsam-dark font-bold px-4 py-2 rounded-xl">Crear</button>
+                    </form>
+                    <div class="mt-4 flex flex-wrap gap-2" id="salones-list">
+                        <!-- JS -->
+                    </div>
+                </div>
+
+                <!-- Registrar Jugador -->
+                <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl">
+                    <h3 class="font-bold text-colsam-accent mb-4 flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5"></i> Inscribir Jugador</h3>
+                    <form onsubmit="handleCreateJugador(event)" class="space-y-3">
+                        <select id="jugador-salon" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30 focus:outline-none focus:border-colsam-secondary">
+                            <option value="">Selecciona un salón...</option>
+                        </select>
+                        <input type="text" id="jugador-name" placeholder="Nombre completo del estudiante" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30 focus:outline-none focus:border-colsam-secondary">
+                        <button type="submit" class="w-full bg-colsam-secondary text-colsam-dark font-bold px-4 py-2 rounded-xl mt-2">Inscribir Jugador</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Lista Jugadores -->
+            <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl">
+                <h3 class="font-bold text-colsam-accent mb-4">Nómina General</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3" id="jugadores-list">
+                    <!-- JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. VISTA: ADMINISTRADORES -->
+        <div id="view-admin" class="tab-content hidden flex flex-col gap-6">
+            <div class="bg-colsam-primary p-6 rounded-2xl shadow-xl max-w-xl mx-auto w-full">
+                <h3 class="font-bold text-colsam-accent mb-4 flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5"></i> Registrar Nuevo Editor</h3>
+                <form onsubmit="handleCreateEditor(event)" class="space-y-4">
+                    <div><label class="text-xs text-colsam-light font-bold">Documento Identidad</label><input type="text" id="ed-doc" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
+                    <div><label class="text-xs text-colsam-light font-bold">Nombre Completo</label><input type="text" id="ed-name" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
+                    <div><label class="text-xs text-colsam-light font-bold">Correo Institucional</label><input type="email" id="ed-email" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
+                    <div><label class="text-xs text-colsam-light font-bold">Contraseña Asignada</label><input type="password" id="ed-pass" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-4 py-2 border border-colsam-secondary/30"></div>
+                    <button type="submit" class="w-full bg-colsam-accent text-colsam-dark font-bold px-4 py-3 rounded-xl mt-2">Guardar Editor</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL: LOGIN -->
+    <div id="loginModal" class="fixed inset-0 bg-colsam-dark/90 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-colsam-primary p-6 rounded-2xl w-full max-w-sm shadow-2xl border border-colsam-secondary/30">
+            <h3 class="text-lg font-bold text-colsam-accent mb-4">Acceso Restringido</h3>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="email" id="log-email" placeholder="Correo" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-3 border border-colsam-secondary/30">
+                <input type="password" id="log-pass" placeholder="Contraseña" required class="w-full bg-colsam-dark text-white rounded-xl px-4 py-3 border border-colsam-secondary/30">
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('loginModal').classList.add('hidden')" class="flex-1 bg-colsam-dark text-colsam-light font-bold py-3 rounded-xl hover:bg-colsam-dark/80">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-colsam-secondary text-colsam-dark font-bold py-3 rounded-xl">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PROGRAMAR / EDITAR PARTIDO -->
+    <div id="matchModal" class="fixed inset-0 bg-colsam-dark/90 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 overflow-y-auto custom-scrollbar">
+        <div class="bg-colsam-primary p-6 rounded-2xl w-full max-w-lg shadow-2xl border border-colsam-secondary/30 my-8">
+            <h3 id="modalMatchTitle" class="text-lg font-bold text-colsam-accent mb-4">Programar Partido</h3>
+            
+            <form id="matchForm" onsubmit="handleSaveMatch(event)" class="space-y-4">
+                <input type="hidden" id="match-id">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-colsam-light font-bold">Deporte</label>
+                        <select id="m-sport" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30">
+                            <option value="Futsal">Futsal</option>
+                            <option value="Balonmano">Balonmano</option>
+                            <option value="Voleibol">Voleibol</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-colsam-light font-bold">Fecha y Hora</label>
+                        <input type="text" id="m-date" placeholder="Ej: 20 May - 10:00 AM" required class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-colsam-light font-bold">Salón Local</label>
+                        <select id="m-team1" onchange="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 select-salones"></select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-colsam-light font-bold">Salón Visitante</label>
+                        <select id="m-team2" onchange="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 select-salones"></select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-colsam-light font-bold">Goles / Puntos Local</label>
+                        <input type="number" id="m-score1" value="0" min="0" oninput="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="text-xs text-colsam-light font-bold">Goles / Puntos Visitante</label>
+                        <input type="number" id="m-score2" value="0" min="0" oninput="generateScorersSelects()" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30 font-bold text-center">
+                    </div>
+                </div>
+
+                <!-- CARGA DE JUGADORES PARA GOLES -->
+                <div class="bg-colsam-dark p-4 rounded-xl border border-colsam-secondary/30">
+                    <h4 class="text-xs font-bold text-colsam-accent mb-2 uppercase">Asignar Puntos a Jugadores</h4>
+                    <p class="text-[10px] text-colsam-light mb-3">Selecciona al jugador que anotó cada tanto.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="scorers-container">
+                        <!-- Selects dinámicos de jugadores -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-colsam-light font-bold">Estado</label>
+                    <select id="m-status" class="w-full mt-1 bg-colsam-dark text-white rounded-xl px-3 py-2 border border-colsam-secondary/30">
+                        <option value="Programado">Programado</option>
+                        <option value="En Curso">En Curso</option>
+                        <option value="Finalizado">Finalizado</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('matchModal').classList.add('hidden')" class="flex-1 bg-colsam-dark text-colsam-light font-bold py-3 rounded-xl hover:bg-colsam-dark/80">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-colsam-secondary text-colsam-dark font-bold py-3 rounded-xl">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script>
+        // --- ESTADO GLOBAL (Memoria Volátil - Se borra al refrescar) ---
+        let sessionUser = null;
+        let dataMatches = [];
+        let dataSalones = [];
+        let dataJugadores = [];
+        let dataGoleadores = [];
+        
+        let filterMSport = 'todos';
+        let filterLSport = 'Futsal';
+        let filterSSport = 'Futsal';
+
+        // Inicialización
+        window.onload = () => {
+            lucide.createIcons();
+            // Evitamos localStorage para cumplir regla: "al refrescar, cierra sesión"
+            updateAuthUI();
+            fetchData();
+        };
+
+        // --- SISTEMA DE SESIÓN ---
+        function handleAuth() {
+            if (sessionUser) {
+                // Cerrar Sesión
+                sessionUser = null;
+                updateAuthUI();
+                switchTab('matches');
+                renderMatches(); // Re-render sin botones de edición
+                alert("Sesión cerrada correctamente.");
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('log-email').value;
+            const pass = document.getElementById('log-pass').value;
+
+            document.getElementById('btnAuthText').textContent = "Verificando...";
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run
+                    .withSuccessHandler(res => {
+                        if (res.success) {
+                            sessionUser = res.user;
+                            updateAuthUI();
+                            document.getElementById('loginModal').classList.add('hidden');
+                            renderMatches();
+                        } else {
+                            alert("Credenciales incorrectas");
+                            document.getElementById('btnAuthText').textContent = "Ingresar";
+                        }
+                    })
+                    .validarLogin(email, pass);
+            } else {
+                // Simulación Local
+                if (email === "admin" && pass === "admin") {
+                    sessionUser = { nombre: "Admin Local", rol: "admin" };
+                } else {
+                    sessionUser = { nombre: "Editor Local", rol: "editor" };
+                }
+                updateAuthUI();
+                document.getElementById('loginModal').classList.add('hidden');
+                renderMatches();
+            }
+        }
+
+        function updateAuthUI() {
+            const btnAuthText = document.getElementById('btnAuthText');
+            const btnAuthAction = document.getElementById('btnAuthAction');
+            const userInfo = document.getElementById('userInfoHeader');
+            const userName = document.getElementById('userNameText');
+            
+            const btnNewMatch = document.getElementById('btnNewMatch');
+            const tabMgmt = document.getElementById('tab-management');
+            const tabAdmin = document.getElementById('tab-admin');
+
+            if (sessionUser) {
+                btnAuthText.textContent = "Salir";
+                btnAuthAction.classList.replace('bg-colsam-secondary', 'bg-red-400');
+                btnAuthAction.classList.replace('text-colsam-dark', 'text-white');
+                userInfo.classList.remove('hidden');
+                userInfo.classList.add('flex');
+                userName.textContent = sessionUser.nombre;
+                
+                btnNewMatch.classList.remove('hidden');
+                btnNewMatch.classList.add('flex');
+                tabMgmt.classList.remove('hidden');
+                tabMgmt.classList.add('flex');
+
+                if (sessionUser.rol === 'admin') {
+                    tabAdmin.classList.remove('hidden');
+                    tabAdmin.classList.add('flex');
+                } else {
+                    tabAdmin.classList.add('hidden');
+                    tabAdmin.classList.remove('flex');
+                }
+            } else {
+                btnAuthText.textContent = "Ingresar";
+                btnAuthAction.classList.replace('bg-red-400', 'bg-colsam-secondary');
+                btnAuthAction.classList.replace('text-white', 'text-colsam-dark');
+                userInfo.classList.add('hidden');
+                userInfo.classList.remove('flex');
+                
+                btnNewMatch.classList.add('hidden');
+                btnNewMatch.classList.remove('flex');
+                tabMgmt.classList.add('hidden');
+                tabMgmt.classList.remove('flex');
+                tabAdmin.classList.add('hidden');
+                tabAdmin.classList.remove('flex');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-colsam-secondary', 'text-colsam-dark');
+                btn.classList.add('bg-colsam-primary', 'text-colsam-light');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-colsam-primary', 'text-colsam-light');
+                activeBtn.classList.add('bg-colsam-secondary', 'text-colsam-dark');
+            }
+        }
+
+        // --- FETCH DE DATOS ---
+        function fetchData() {
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(res => {
+                    dataMatches = res.partidos || [];
+                    dataSalones = res.salones || [];
+                    dataJugadores = res.jugadores || [];
+                    dataGoleadores = res.goleadores || [];
+                    
+                    updateSalonesUI();
+                    renderMatches();
+                    renderLeaderboard();
+                    renderScorers();
+                }).obtenerDatosGlobales();
+            } else {
+                // Mock Local
+                dataSalones = [{id: 1, nombre: '11A'}, {id: 2, nombre: '10B'}];
+                dataJugadores = [{id: 1, nombre: 'Juan Perez', salon: '11A'}];
+                dataMatches = [{id: 1, deporte: 'Futsal', equipo1: '11A', equipo2: '10B', fecha: 'Hoy', estado: 'Programado', goles1: 0, goles2: 0}];
+                updateSalonesUI();
+                renderMatches();
+            }
+        }
+
+        // --- 1. PARTIDOS ---
+        function filterMatches(sport) {
+            filterMSport = sport;
+            const btns = ['todos', 'futsal', 'balonmano', 'voleibol'];
+            btns.forEach(b => {
+                const btn = document.getElementById(`btn-m-${b}`);
+                if (b === sport.toLowerCase() || (sport === 'todos' && b === 'todos')) {
+                    btn.classList.replace('bg-colsam-dark', 'bg-colsam-secondary');
+                    btn.classList.replace('text-colsam-light', 'text-colsam-dark');
+                } else {
+                    btn.classList.replace('bg-colsam-secondary', 'bg-colsam-dark');
+                    btn.classList.replace('text-colsam-dark', 'text-colsam-light');
+                }
+            });
+            renderMatches();
+        }
+
+        function renderMatches() {
+            const grid = document.getElementById('matches-grid');
+            grid.innerHTML = '';
+            
+            let filtered = dataMatches;
+            if (filterMSport !== 'todos') filtered = dataMatches.filter(m => m.deporte === filterMSport);
+
+            filtered.forEach(m => {
+                const isFinal = m.estado === 'Finalizado';
+                const div = document.createElement('div');
+                div.className = "bg-colsam-primary border border-colsam-secondary/20 p-5 rounded-2xl flex flex-col justify-between";
+                
+                let controls = '';
+                if (sessionUser) {
+                    controls = `<button onclick="openMatchModal(${m.id})" class="text-colsam-accent text-xs font-bold bg-colsam-dark px-3 py-1.5 rounded-lg hover:bg-colsam-secondary hover:text-colsam-dark transition">Registrar / Editar</button>`;
+                }
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-colsam-secondary bg-colsam-dark px-2 py-1 rounded-md">${m.deporte}</span>
+                        <span class="text-xs text-colsam-light">${m.fecha}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-4">
+                        <div class="text-center flex-1 font-bold text-white">${m.equipo1}</div>
+                        <div class="px-4 text-center">
+                            ${m.estado === 'Programado' ? 
+                              `<span class="text-colsam-accent font-bold text-sm bg-colsam-dark px-3 py-1 rounded-lg">VS</span>` : 
+                              `<span class="text-white font-extrabold text-lg bg-colsam-dark px-4 py-1.5 rounded-xl border border-colsam-secondary/30">${m.goles1} - ${m.goles2}</span>`
+                            }
+                        </div>
+                        <div class="text-center flex-1 font-bold text-white">${m.equipo2}</div>
+                    </div>
+                    <div class="flex justify-between items-center mt-2 border-t border-colsam-secondary/20 pt-3">
+                        <span class="text-[10px] font-bold ${isFinal ? 'text-green-400' : 'text-amber-400'} uppercase">${m.estado}</span>
+                        ${controls}
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // --- GESTIÓN DE PARTIDOS Y GOLES ---
+        function openMatchModal(id = null) {
+            document.getElementById('matchForm').reset();
+            document.getElementById('scorers-container').innerHTML = '';
+            
+            // Llenar selects de salones
+            const selects = document.querySelectorAll('.select-salones');
+            selects.forEach(sel => {
+                sel.innerHTML = '<option value="">Selecciona salón...</option>';
+                dataSalones.forEach(s => {
+                    sel.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
+                });
+            });
+
+            if (id) {
+                document.getElementById('modalMatchTitle').textContent = "Registrar Resultado";
+                const m = dataMatches.find(x => x.id === id);
+                document.getElementById('match-id').value = m.id;
+                document.getElementById('m-sport').value = m.deporte;
+                document.getElementById('m-date').value = m.fecha;
+                document.getElementById('m-team1').value = m.equipo1;
+                document.getElementById('m-team2').value = m.equipo2;
+                document.getElementById('m-score1').value = m.goles1;
+                document.getElementById('m-score2').value = m.goles2;
+                document.getElementById('m-status').value = m.estado;
+                generateScorersSelects();
+            } else {
+                document.getElementById('modalMatchTitle').textContent = "Programar Partido";
+                document.getElementById('match-id').value = '';
+            }
+
+            document.getElementById('matchModal').classList.remove('hidden');
+        }
+
+        function generateScorersSelects() {
+            const team1 = document.getElementById('m-team1').value;
+            const team2 = document.getElementById('m-team2').value;
+            const score1 = parseInt(document.getElementById('m-score1').value) || 0;
+            const score2 = parseInt(document.getElementById('m-score2').value) || 0;
+            const container = document.getElementById('scorers-container');
+            container.innerHTML = '';
+
+            // Generar inputs para Equipo 1
+            if (score1 > 0 && team1) {
+                let div = document.createElement('div');
+                div.innerHTML = `<h5 class="text-[10px] font-bold text-colsam-secondary uppercase mb-2">Goles de ${team1}</h5>`;
+                const players1 = dataJugadores.filter(j => j.salon === team1);
+                
+                for(let i=0; i<score1; i++) {
+                    let sel = `<select class="w-full mb-1 bg-colsam-primary text-white text-xs px-2 py-1.5 rounded-lg border border-colsam-secondary/30 scorer-team1" required><option value="">¿Quién anotó?</option>`;
+                    players1.forEach(p => sel += `<option value="${p.nombre}">${p.nombre}</option>`);
+                    sel += `</select>`;
+                    div.innerHTML += sel;
+                }
+                container.appendChild(div);
+            }
+
+            // Generar inputs para Equipo 2
+            if (score2 > 0 && team2) {
+                let div = document.createElement('div');
+                div.innerHTML = `<h5 class="text-[10px] font-bold text-colsam-secondary uppercase mb-2">Goles de ${team2}</h5>`;
+                const players2 = dataJugadores.filter(j => j.salon === team2);
+                
+                for(let i=0; i<score2; i++) {
+                    let sel = `<select class="w-full mb-1 bg-colsam-primary text-white text-xs px-2 py-1.5 rounded-lg border border-colsam-secondary/30 scorer-team2" required><option value="">¿Quién anotó?</option>`;
+                    players2.forEach(p => sel += `<option value="${p.nombre}">${p.nombre}</option>`);
+                    sel += `</select>`;
+                    div.innerHTML += sel;
+                }
+                container.appendChild(div);
+            }
+        }
+
+        function handleSaveMatch(e) {
+            e.preventDefault();
+            const team1 = document.getElementById('m-team1').value;
+            const team2 = document.getElementById('m-team2').value;
+            if(team1 === team2) return alert("Los salones deben ser distintos.");
+
+            // Recolectar goleadores asignados
+            const assignedScorers = [];
+            document.querySelectorAll('.scorer-team1').forEach(s => { if(s.value) assignedScorers.push({jugador: s.value, salon: team1}); });
+            document.querySelectorAll('.scorer-team2').forEach(s => { if(s.value) assignedScorers.push({jugador: s.value, salon: team2}); });
+
+            const matchData = {
+                id: document.getElementById('match-id').value || Date.now(),
+                deporte: document.getElementById('m-sport').value,
+                fecha: document.getElementById('m-date').value,
+                equipo1: team1,
+                equipo2: team2,
+                goles1: document.getElementById('m-score1').value,
+                goles2: document.getElementById('m-score2').value,
+                estado: document.getElementById('m-status').value,
+                goleadoresInfo: assignedScorers
+            };
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(res => {
+                    dataMatches = res.partidos;
+                    dataGoleadores = res.goleadores;
+                    document.getElementById('matchModal').classList.add('hidden');
+                    renderMatches();
+                    renderLeaderboard();
+                    renderScorers();
+                    alert("Partido guardado con éxito.");
+                }).guardarPartidoYGoles(matchData);
+            } else {
+                alert("Guardado local.");
+                document.getElementById('matchModal').classList.add('hidden');
+            }
+        }
+
+        // --- GESTIÓN DE TORNEO (SALONES Y JUGADORES) ---
+        function updateSalonesUI() {
+            // Actualizar lista en pestaña
+            const list = document.getElementById('salones-list');
+            list.innerHTML = '';
+            dataSalones.forEach(s => {
+                list.innerHTML += `<span class="bg-colsam-dark text-colsam-secondary border border-colsam-secondary/30 px-3 py-1 rounded-lg text-xs font-bold">${s.nombre}</span>`;
+            });
+
+            // Actualizar select de inscribir jugador
+            const select = document.getElementById('jugador-salon');
+            select.innerHTML = '<option value="">Selecciona salón...</option>';
+            dataSalones.forEach(s => {
+                select.innerHTML += `<option value="${s.nombre}">${s.nombre}</option>`;
+            });
+
+            // Actualizar tabla nomina
+            const jList = document.getElementById('jugadores-list');
+            jList.innerHTML = '';
+            dataJugadores.forEach(j => {
+                jList.innerHTML += `
+                    <div class="bg-colsam-dark p-2 rounded-lg border border-colsam-secondary/30 flex justify-between items-center text-xs">
+                        <span class="font-bold text-white">${j.nombre}</span>
+                        <span class="text-colsam-secondary bg-colsam-primary px-2 py-0.5 rounded font-bold">${j.salon}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function handleCreateSalon(e) {
+            e.preventDefault();
+            const name = document.getElementById('salon-name').value.trim();
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(res => {
+                    dataSalones = res.salones;
+                    updateSalonesUI();
+                    document.getElementById('salon-name').value = '';
+                }).crearSalon(name);
+            }
+        }
+
+        function handleCreateJugador(e) {
+            e.preventDefault();
+            const salon = document.getElementById('jugador-salon').value;
+            const name = document.getElementById('jugador-name').value.trim();
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(res => {
+                    dataJugadores = res.jugadores;
+                    updateSalonesUI();
+                    document.getElementById('jugador-name').value = '';
+                }).crearJugador(name, salon);
+            }
+        }
+
+        // --- CÁLCULO DE TABLAS Y GOLEADORES ---
+        function filterLeaderboard(sport) {
+            filterLSport = sport;
+            const btns = ['Futsal', 'Balonmano', 'Voleibol'];
+            btns.forEach(b => {
+                const btn = document.getElementById(`btn-l-${b.toLowerCase()}`);
+                if (b === sport) {
+                    btn.classList.replace('bg-colsam-dark', 'bg-colsam-secondary');
+                    btn.classList.replace('text-colsam-light', 'text-colsam-dark');
+                } else {
+                    btn.classList.replace('bg-colsam-secondary', 'bg-colsam-dark');
+                    btn.classList.replace('text-colsam-dark', 'text-colsam-light');
+                }
+            });
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboard-body');
+            tbody.innerHTML = '';
+
+            let table = {};
+            dataSalones.forEach(s => { table[s.nombre] = { pj:0, pg:0, pe:0, pp:0, pts:0 }; });
+
+            dataMatches.forEach(m => {
+                if (m.deporte === filterLSport && m.estado === 'Finalizado') {
+                    if(!table[m.equipo1]) table[m.equipo1] = { pj:0, pg:0, pe:0, pp:0, pts:0 };
+                    if(!table[m.equipo2]) table[m.equipo2] = { pj:0, pg:0, pe:0, pp:0, pts:0 };
+                    
+                    let g1 = parseInt(m.goles1);
+                    let g2 = parseInt(m.goles2);
+                    
+                    table[m.equipo1].pj++;
+                    table[m.equipo2].pj++;
+
+                    if (g1 > g2) { table[m.equipo1].pg++; table[m.equipo1].pts += 3; table[m.equipo2].pp++; }
+                    else if (g1 < g2) { table[m.equipo2].pg++; table[m.equipo2].pts += 3; table[m.equipo1].pp++; }
+                    else { table[m.equipo1].pe++; table[m.equipo1].pts += 1; table[m.equipo2].pe++; table[m.equipo2].pts += 1; }
+                }
+            });
+
+            const sorted = Object.keys(table).map(k => ({salon: k, ...table[k]})).sort((a,b) => b.pts - a.pts);
+
+            sorted.forEach((row, i) => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-colsam-dark transition">
+                        <td class="p-4 text-center font-bold text-colsam-secondary">${i+1}</td>
+                        <td class="p-4 font-bold text-white">${row.salon}</td>
+                        <td class="p-3 text-center text-colsam-light">${row.pj}</td>
+                        <td class="p-3 text-center text-green-400">${row.pg}</td>
+                        <td class="p-3 text-center text-colsam-light">${row.pe}</td>
+                        <td class="p-3 text-center text-red-400">${row.pp}</td>
+                        <td class="p-4 text-right font-black text-colsam-accent text-base">${row.pts}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterScorers(sport) {
+            filterSSport = sport;
+            const btns = ['Futsal', 'Balonmano', 'Voleibol'];
+            btns.forEach(b => {
+                const btn = document.getElementById(`btn-s-${b.toLowerCase()}`);
+                if (b === sport) {
+                    btn.classList.replace('bg-colsam-dark', 'bg-colsam-secondary');
+                    btn.classList.replace('text-colsam-light', 'text-colsam-dark');
+                } else {
+                    btn.classList.replace('bg-colsam-secondary', 'bg-colsam-dark');
+                    btn.classList.replace('text-colsam-dark', 'text-colsam-light');
+                }
+            });
+            renderScorers();
+        }
+
+        function renderScorers() {
+            const grid = document.getElementById('scorers-grid');
+            grid.innerHTML = '';
+            
+            const filtered = dataGoleadores.filter(g => g.deporte === filterSSport).sort((a,b) => b.goles - a.goles);
+            
+            filtered.forEach((g, i) => {
+                grid.innerHTML += `
+                    <div class="bg-colsam-primary border border-colsam-secondary/30 p-4 rounded-xl flex items-center justify-between shadow">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-md bg-colsam-dark text-colsam-accent font-bold flex justify-center items-center text-xs">${i+1}</span>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">${g.jugador}</h4>
+                                <span class="text-[10px] text-colsam-secondary uppercase tracking-widest font-bold">${g.salon}</span>
+                            </div>
+                        </div>
+                        <div class="bg-colsam-dark px-3 py-1.5 rounded-lg text-right">
+                            <span class="block text-colsam-accent font-black text-lg leading-none">${g.goles}</span>
+                            <span class="text-[9px] text-colsam-light">GOLES</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- ADMINISTRACIÓN ---
+        function handleCreateEditor(e) {
+            e.preventDefault();
+            const doc = document.getElementById('ed-doc').value;
+            const nom = document.getElementById('ed-name').value;
+            const email = document.getElementById('ed-email').value;
+            const pass = document.getElementById('ed-pass').value;
+
+            if (typeof google !== 'undefined' && google.script) {
+                google.script.run.withSuccessHandler(res => {
+                    alert("Editor registrado con éxito.");
+                    e.target.reset();
+                }).crearEditor({doc, nom, email, pass});
+            }
+        }
+    </script>
+</body>
+</html>
